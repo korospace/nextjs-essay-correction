@@ -11,7 +11,7 @@ export default function DashboardPage() {
     <main className="">
       <h2>Hai, {session?.user.full_name} username: {session?.user.username} id_role: {session?.user.id_user_role}</h2>
       <p>dashboard</p>
-      <Button color="danger" onClick={() => signOut}>logout</Button>
+      <Button color="danger" onClick={() => signOut()}>logout</Button>
     </main>
   );
 }

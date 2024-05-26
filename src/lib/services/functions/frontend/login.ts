@@ -1,7 +1,9 @@
-import { ApiResponse } from "@/lib/types/mainType";
+// nextjs
 import { signIn } from "next-auth/react";
+// types
+import { ApiResponse } from "@/lib/types/mainType";
 
-export const HttpLogin = async (data: HTMLFormElement, callbackUrl: string): Promise<ApiResponse> => {
+export const HttpLogin = async (data: any, callbackUrl: string): Promise<ApiResponse> => {
   try {
     const res = await signIn("credentials", {
       redirect: false,

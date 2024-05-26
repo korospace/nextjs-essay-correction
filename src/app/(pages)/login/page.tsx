@@ -16,7 +16,6 @@ import { HttpLogin } from "@/lib/services/functions/frontend/login";
 export default function LoginPage({ searchParams }: any) {
     const route = useRouter();
     const callbackUrl = searchParams.callbackUrl && searchParams.callbackUrl !== process.env.BASE_URL
-        // searchParams.callbackUrl !== "http://localhost:3000/"
         ? searchParams.callbackUrl
         : "/dashboard";
     console.log(callbackUrl);
@@ -26,24 +25,23 @@ export default function LoginPage({ searchParams }: any) {
     const [usernameInvalid, setUsernameInvalid] = useState<boolean>(false)
     const [passwordInvalid, setPasswordInvalid] = useState<boolean>(false)
 
-    const hadleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const hadleSubmit = async (e: any) => {
         e.preventDefault();
-        setUsernameInvalid(false)
-        setPasswordInvalid(false)
-        const username = e.currentTarget.username.value;
-        const password = e.currentTarget.password.value;
+        const username = e.target.username.value;
+        const password = e.target.password.value;
 
         if (username == "") setUsernameInvalid(true)
         if (password == "") setPasswordInvalid(true)
         if (username == "" || password == "") return
 
         setIsLoading(true);
-        const res = await HttpLogin(e.currentTarget, callbackUrl);
+        const res = await HttpLogin(e.target, callbackUrl);
         setIsLoading(false);
 
         if (res.status == true) {
+            toast.success("login success!");
             route.push(callbackUrl);
-            e.currentTarget.reset();
+            e.target.reset();
         } else {
             if (res.message === "invalid username or password") {
                 setUsernameInvalid(true)
@@ -117,7 +115,9 @@ export default function LoginPage({ searchParams }: any) {
                             type="submit" 
                             disabled={isLoading} 
                             radius="sm" 
-                            className="w-full bg-primary-700 text-white">
+                            className="w-full bg-primary-700 text-white"
+                            onClick={() => { setUsernameInvalid(false);setPasswordInvalid(false) }}
+                        >
                                 {!isLoading ? (
                                     "Login"
                                 ) : (
