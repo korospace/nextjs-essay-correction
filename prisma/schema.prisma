@@ -12,3 +12,35 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Synonym {
+  id_synonym Int     @id @default(autoincrement())
+  word       String  @db.VarChar(255)
+  tag        String? @db.VarChar(255)
+  synonym    String? @db.VarChar(255)
+
+  @@map("synonym")
+}
+
+model User {
+  id_user       Int      @id @default(autoincrement())
+  username      String   @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  full_name     String   @db.VarChar(255)
+  id_user_role  Int      @default(0)
+  created_by    Int      @default(0)
+  created_date  DateTime @default(now())
+  updated_by    Int      @default(0)
+  updated_date  DateTime @updatedAt
+  deleted_by    Int      @default(0)
+  deleted_date  DateTime?
+
+  @@map("user")
+}
+
+model UserRole {
+  id_user_role  Int      @id @default(autoincrement())
+  role_name     String   @db.VarChar(255)
+
+  @@map("user_role")
+}

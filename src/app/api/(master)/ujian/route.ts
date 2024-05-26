@@ -1,7 +1,7 @@
 // nextjs
 import { NextRequest } from "next/server";
 // helpers
-import { KoreksiEssay, ResponseHelper } from "@/helpers/helpers";
+import { KoreksiEssay, ResponseFormating } from "@/lib/helpers/helpers";
 
 /**
  * List Of Ujian
@@ -13,20 +13,34 @@ export async function POST(request: NextRequest) {
   const req = await request.json();
 
   let kunciJawabanCleaned = KoreksiEssay.cleanText(req.kunciJawaban)
-  let kunciJawabanStemmed = KoreksiEssay.stemming(kunciJawabanCleaned)
+  let kunciJawabanStemmed = KoreksiEssay.stemmingSastrawi(kunciJawabanCleaned)
   let kunciJawabanStopwords = KoreksiEssay.stopwordRemoval(kunciJawabanStemmed.str)
 
   let jawabanCleaned = KoreksiEssay.cleanText(req.jawaban)
-  let jawabanStemmed = KoreksiEssay.stemming(jawabanCleaned)
+  let jawabanStemmed = KoreksiEssay.stemmingSastrawi(jawabanCleaned)
   let jawabanStopwords = KoreksiEssay.stopwordRemoval(jawabanStemmed.str)
 
   // Hitung similarity matrix antara kedua kalimat
-  const similarityMatrix = KoreksiEssay.simMatrix(kunciJawabanStopwords.arr, jawabanStopwords.arr);
+  const similarityMatrix = await KoreksiEssay.simMatrix(kunciJawabanStopwords.arr, jawabanStopwords.arr);
   // Hitung similarity terbesar antara setiap kata pada jawaban dengan kunciJawaban jawaban
   const maxSimilarity = KoreksiEssay.maxSim(similarityMatrix);
   // Hitung nilai kesamaan rata-rata
-  const percentage = KoreksiEssay.gradingPercentage(maxSimilarity);
-  const grading = KoreksiEssay.grading(percentage);
+  const resultLev = KoreksiEssay.resultLev(maxSimilarity);
+  const resultLevPercentage = KoreksiEssay.resultLevPercentage(maxSimilarity);
+  const resultLevGrading = KoreksiEssay.resultLevGrading(maxSimilarity);
 
-  return ResponseHelper.json(`percentage: ${percentage}% | Grade: ${grading}`, 200)
+  const result = {
+    result: resultLev,
+    percentage: resultLevPercentage,
+    Grade: resultLevGrading,
+    kunciJawaban: {
+      stemmed: kunciJawabanStemmed.str,
+      stopword_removed: kunciJawabanStopwords.str
+    },
+    jawaban: {
+      stemmed: jawabanStemmed.str,
+      stopword_removed: jawabanStopwords.str
+    }
+  }
+  return ResponseFormating.json(`success`, 200, result)
 }
