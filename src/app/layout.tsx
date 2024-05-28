@@ -12,8 +12,8 @@ import { NextAuthProvider, NextUiProvider } from '@/lib/context';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: "Koreksi Essay",
-  description: "Koreksi Essay",
+  title: "Sistem Penilaian Essay",
+  description: "Sistem Penilaian Essay",
   icons: {
     icon: BudiluhurJpg.src,
   },

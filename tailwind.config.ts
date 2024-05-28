@@ -10,15 +10,8 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-      },
       colors: {
-        white: "#FFFFFF",
-        black: "#000000",
-        primary: {
+        budiluhur: {
           50: "#dbf8ff",
           100: "#b4e6fa",
           200: "#89d5f3",
@@ -30,7 +23,6 @@ const config: Config = {
           800: "#003348",
           900: "#00131d",
           DEFAULT: "#1a97cb",
-          foreground: "#ffffff"
         },
       }
     },

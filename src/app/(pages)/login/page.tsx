@@ -18,7 +18,6 @@ export default function LoginPage({ searchParams }: any) {
     const callbackUrl = searchParams.callbackUrl && searchParams.callbackUrl !== process.env.BASE_URL
         ? searchParams.callbackUrl
         : "/dashboard";
-    console.log(callbackUrl);
 
     const [showPassword, setShowPassword] = useState<boolean>(false)
     const [isLoading, setIsLoading]       = useState<boolean>(false)
@@ -52,8 +51,8 @@ export default function LoginPage({ searchParams }: any) {
     };
 
     return (
-        <main className="w-screen h-screen p-10 flex justify-center items-center bg-primary-500">
-            <Card className="w-screen max-w-64 bg-primary-300">
+        <main className="w-screen h-screen p-10 flex justify-center items-center bg-budiluhur-500">
+            <Card className="w-screen max-w-64 bg-budiluhur-300">
                 <form onSubmit={hadleSubmit}>
                     <CardHeader className="flex justify-center">
                         <div className="w-20 p-2 bg-white rounded-full">
@@ -77,7 +76,7 @@ export default function LoginPage({ searchParams }: any) {
                             variant="bordered"
                             isInvalid={usernameInvalid}
                             labelPlacement="outside"
-                            className="mb-4 rounded-lg bg-primary-50"
+                            className="mb-4 rounded-lg bg-budiluhur-50"
                             onKeyUp={() => setUsernameInvalid(false)}
                         />
                         <Input 
@@ -90,7 +89,7 @@ export default function LoginPage({ searchParams }: any) {
                             variant="bordered"
                             isInvalid={passwordInvalid}
                             labelPlacement="outside"
-                            className="rounded-lg bg-primary-50"
+                            className="rounded-lg bg-budiluhur-50"
                             onKeyUp={() => setPasswordInvalid(false)}
                             endContent={
                                 <button className="focus:outline-none" type="button" onClick={() => setShowPassword(!showPassword)}>
@@ -113,16 +112,12 @@ export default function LoginPage({ searchParams }: any) {
                     <CardFooter>
                         <Button 
                             type="submit" 
-                            disabled={isLoading} 
+                            isLoading={isLoading} 
                             radius="sm" 
-                            className="w-full bg-primary-700 text-white"
+                            className="w-full bg-budiluhur-700 text-white"
                             onClick={() => { setUsernameInvalid(false);setPasswordInvalid(false) }}
                         >
-                                {!isLoading ? (
-                                    "Login"
-                                ) : (
-                                    <Icon icon="line-md:loading-twotone-loop" className="text-2xl" />
-                                )}
+                            Login
                         </Button>
                     </CardFooter>
                 </form>
