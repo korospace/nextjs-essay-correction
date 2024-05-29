@@ -32,11 +32,15 @@
     "react-hot-toast": "^2.4.1",
     "sastrawijs": "^1.1.0",
     "stopword": "^3.0.1",
+    "styled-components": "^6.1.11",
     "tailwindcss": "3.4.3",
     "typescript": "5.4.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "prisma": "^5.14.0"
+  },
+  "resolutions": {
+    "styled-components": "^5"
   }
 }

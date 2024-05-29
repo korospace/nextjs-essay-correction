@@ -8,7 +8,4 @@ export function Middleware(request: NextRequest) {
   return res;
 }
 
-export default PageMiddleware(Middleware, [
-  "/login",
-  "/dashboard",
-]);
+export default PageMiddleware(Middleware, ["/login", "/logout", "/dashboard"]);
