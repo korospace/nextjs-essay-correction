@@ -37,3 +37,13 @@ export type CourseSearchType = {
     name?: any;
   }[];
 };
+
+export type ExamInputType = {
+  id_exam?: number;
+  id_course: number;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  duration: number;
+};

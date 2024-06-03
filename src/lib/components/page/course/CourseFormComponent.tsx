@@ -42,12 +42,15 @@ export default function CourseFormComponent({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    // reset error
     setNameInvalid({ invalid: false, message: "" });
     setDescriptionInvalid({ invalid: false, message: "" });
 
+    // value
     const name = e.target.name.value;
     const description = e.target.description.value;
 
+    // validation empty
     if (name == "")
       setNameInvalid({ invalid: true, message: "name cant be empty" });
     if (description == "")
@@ -57,6 +60,7 @@ export default function CourseFormComponent({
       });
     if (name == "" || description == "") return;
 
+    // build payload
     const httpMethod: string = dtCourse === undefined ? "POST" : "PUT";
     const httpPayload: CourseInputType = {
       id_course: dtCourse?.id_course,
@@ -64,10 +68,12 @@ export default function CourseFormComponent({
       description: description,
     };
 
+    // HTTP
     setLoadingForm(true);
     const res = await HttpSaveCourse(apiPath, httpMethod, httpPayload);
     setLoadingForm(false);
 
+    // response
     if (res.status == true) {
       toast.success("data saved successfully!");
       afterSubmit();

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 // nextjs
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
+// external lib
+import { useRouter } from "next-nprogress-bar";
 // components
 import ExamFilterComponent from "@/lib/components/page/exam/ExamFilterComponent";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
@@ -15,6 +17,9 @@ import { BreadcrumbItemType } from "@/lib/types/ComponentTypes";
 import { SessionType } from "@/lib/types/ResultTypes";
 
 export default function ExamPage() {
+  // router
+  const router = useRouter();
+
   // session
   const { data: session, status }: { data: any; status: string } = useSession();
 
@@ -62,8 +67,37 @@ export default function ExamPage() {
             placeholder="Search exam title"
             showBtnAdd={dataSession?.user.id_user_role === 1}
             searchOnEnter={(keyword) => setKeyword(keyword)}
-            btnOnClick={() => setShowForm(true)}
+            btnOnClick={() => router.push("/dashboard/exam/create")}
           />
+        </div>
+
+        {/* Table */}
+        <div className="mt-5 overflow-x-auto shadow rounded-md">
+          <table className="w-full text-sm text-left text-budiluhur-700">
+            {/* Head */}
+            <thead className="uppercase bg-budiluhur-500">
+              <tr className="border-b border-budiluhur-700">
+                <th scope="col" className="px-6 py-3">
+                  NO
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Course Name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Exam Title
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Schedule Info
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3 text-right">
+                  Action
+                </th>
+              </tr>
+            </thead>
+          </table>
         </div>
       </main>
     </PageComponent>

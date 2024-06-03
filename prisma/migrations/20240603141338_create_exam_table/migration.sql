@@ -1,6 +1,7 @@
 -- CreateTable
 CREATE TABLE `exam` (
     `id_exam` INTEGER NOT NULL AUTO_INCREMENT,
+    `id_course` INTEGER NOT NULL,
     `title` VARCHAR(255) NOT NULL,
     `description` VARCHAR(255) NULL,
     `start_date` DATETIME(3) NOT NULL,

@@ -40,3 +40,36 @@ export type CourseType = {
   name: string;
   description: string;
 };
+
+export type ExamType = {
+  id_exam: number;
+  id_course: number;
+  title: string;
+  description: string;
+  start_date: string;
+  end_date: string;
+  duration: number;
+};
+
+export type ExamMemberType = {
+  id_exam_member: number;
+  id_exam: number;
+  id_user: number;
+  start_date?: string;
+  end_date?: string;
+  status?: string;
+};
+
+export type ExamQuestionType = {
+  id_exam_question: number;
+  id_exam: number;
+  question: string;
+  answer_key: string;
+};
+
+export type ExamAnswerType = {
+  id_exam_answer: number;
+  id_exam_question: number;
+  id_user: number;
+  answer: string;
+};

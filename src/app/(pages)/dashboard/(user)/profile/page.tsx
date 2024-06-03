@@ -65,18 +65,23 @@ export default function SettingPage() {
 
   const handleGeneralInformation = async (e: any) => {
     e.preventDefault();
+
+    // reset error
     setUsernameInvalid({ invalid: false, message: "" });
     setFullnameInvalid({ invalid: false, message: "" });
 
+    // value
     const username = e.target.username.value;
     const fullName = e.target.full_name.value;
 
+    // validation empty
     if (username == "")
       setUsernameInvalid({ invalid: true, message: "username cant be empty" });
     if (fullName == "")
       setFullnameInvalid({ invalid: true, message: "full nama cant be empty" });
     if (username == "" || fullName == "") return;
 
+    // HTTP
     setLoadingGeneralInfo(true);
     const res = await HttpUpdateProfile({
       username: username,
@@ -84,6 +89,7 @@ export default function SettingPage() {
     });
     setLoadingGeneralInfo(false);
 
+    // response
     if (res.status == true) {
       toast.success("general information update successfully!");
       fetchProfile();
@@ -109,17 +115,20 @@ export default function SettingPage() {
 
   const handleSecurity = async (e: any) => {
     e.preventDefault();
+
+    // reset error
     setPasswordInvalid({ invalid: false, message: "" });
     setRepPasswordInvalid({ invalid: false, message: "" });
 
+    // value
     const password = e.target.password.value;
     const repPassword = e.target.repeat_password.value;
 
+    // validation
     if (password == "") {
       setPasswordInvalid({ invalid: true, message: "password cant be empty" });
       return;
     }
-
     if (repPassword !== password) {
       setRepPasswordInvalid({
         invalid: true,
@@ -128,6 +137,7 @@ export default function SettingPage() {
       return;
     }
 
+    // HTTP
     setLoadingSecurity(true);
     const res = await HttpUpdateProfile({
       username: profile?.username || "",
@@ -136,6 +146,7 @@ export default function SettingPage() {
     });
     setLoadingSecurity(false);
 
+    // response
     if (res.status == true) {
       toast.success("security update successfully!");
       e.target.reset();

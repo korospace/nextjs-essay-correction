@@ -60,7 +60,7 @@ export const HttpSaveUser = async (
     if (res.ok) {
       return {
         status: true,
-        message: "Data update successfully",
+        message: "Data save successfully",
         data: resJson,
       };
     } else {

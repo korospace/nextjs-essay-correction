@@ -11,6 +11,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      spacing: {
+        "11.5": "2.875rem",
+      },
       colors: {
         transitionProperty: {
           height: "height",

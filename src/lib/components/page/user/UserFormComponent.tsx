@@ -42,14 +42,17 @@ export default function UserFormComponent({
   const handleSubmit = async (e: any) => {
     e.preventDefault();
 
+    // reset error
     setUsernameInvalid({ invalid: false, message: "" });
     setFullnameInvalid({ invalid: false, message: "" });
     setPasswordInvalid({ invalid: false, message: "" });
 
+    // value
     const username = e.target.username.value;
     const fullName = e.target.full_name.value;
     const password = e.target.password.value;
 
+    // validation empty
     if (username == "")
       setUsernameInvalid({ invalid: true, message: "username cant be empty" });
     if (fullName == "")
@@ -63,6 +66,7 @@ export default function UserFormComponent({
     )
       return;
 
+    // build payload
     const httpMethod: string = dtUser === undefined ? "POST" : "PUT";
     const httpPayload: UserInputType =
       password === ""
@@ -78,10 +82,12 @@ export default function UserFormComponent({
             password: password,
           };
 
+    // HTTP
     setLoadingForm(true);
     const res = await HttpSaveUser(apiPath, httpMethod, httpPayload);
     setLoadingForm(false);
 
+    // response
     if (res.status == true) {
       toast.success("data saved successfully!");
       afterSubmit();

@@ -5,7 +5,7 @@ import { EssayCorrection } from "@/lib/helpers/essay_correction";
 import { ResponseFormating } from "@/lib/helpers/helpers";
 
 /**
- * List Of Ujian
+ * Create Exam
  * -------------------------
  */
 export async function POST(request: NextRequest) {

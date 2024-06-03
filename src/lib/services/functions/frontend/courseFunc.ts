@@ -60,7 +60,7 @@ export const HttpSaveCourse = async (
     if (res.ok) {
       return {
         status: true,
-        message: "Course update successfully",
+        message: "Course save successfully",
         data: resJson,
       };
     } else {

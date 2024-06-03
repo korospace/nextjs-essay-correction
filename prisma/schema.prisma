@@ -67,6 +67,7 @@ model Synonym {
 
 model Exam {
   id_exam       Int       @id @default(autoincrement())
+  id_course     Int       
   title         String    @db.VarChar(255)
   description   String?   @db.VarChar(255)
   start_date    DateTime

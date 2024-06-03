@@ -10,7 +10,7 @@ import { SelectOptionType } from "@/lib/types/ComponentTypes";
 import {
   GetExamCourseOpt,
   GetExamStatuOpt,
-} from "@/lib/services/functions/frontend/examFunct";
+} from "@/lib/services/functions/frontend/examFunc";
 
 /**
  * Props
