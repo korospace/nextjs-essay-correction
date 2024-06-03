@@ -1,11 +1,28 @@
 // nextjs
-import { NextRequest, NextResponse } from "next/server";
+import { NextMiddleware, NextResponse } from "next/server";
+// types
+import { MiddlewareFactoryType } from "@/lib/types/ResultTypes";
 // middlewares
-import { PageMiddleware } from "./lib/middlewares";
+import {
+  ApiMiddleware,
+  HeaderMiddleware,
+  PageMiddleware,
+} from "./lib/middlewares";
 
-export function Middleware(request: NextRequest) {
-  const res = NextResponse.next();
-  return res;
+export function ChainMiddleare(
+  functions: MiddlewareFactoryType[] = [],
+  index = 0
+): NextMiddleware {
+  const current = functions[index];
+  if (current) {
+    const next = ChainMiddleare(functions, index + 1);
+    return current(next);
+  }
+  return () => NextResponse.next();
 }
 
-export default PageMiddleware(Middleware, ["/login", "/logout", "/dashboard"]);
+export default ChainMiddleare([
+  HeaderMiddleware,
+  ApiMiddleware,
+  PageMiddleware,
+]);

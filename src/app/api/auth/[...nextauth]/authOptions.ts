@@ -36,14 +36,18 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, profile, user }: any) {
       if (account?.provider === "credentials") {
-        token.username      = user.username;
-        token.full_name     = user.full_name;
-        token.id_user_role  = user.id_user_role;
+        token.id_user = user.id_user;
+        token.username = user.username;
+        token.full_name = user.full_name;
+        token.id_user_role = user.id_user_role;
       }
 
       return token;
     },
     async session({ session, token }: any) {
+      if ("id_user" in token) {
+        session.user.id_user = token.id_user;
+      }
       if ("username" in token) {
         session.user.username = token.username;
       }
@@ -62,4 +66,4 @@ const authOptions: NextAuthOptions = {
   },
 };
 
-export default authOptions
+export default authOptions;

@@ -6,31 +6,48 @@ import {
   NextRequest,
   NextResponse,
 } from "next/server";
+import { MiddlewareFactoryType } from "../types/ResultTypes";
 
-const authPage: string[]    = [
-  "/login"
+/**
+ * MIDDLEWARE PATH
+ * ----------------------------
+ */
+const authPage: string[] = ["/login"];
+const onlyAdmin: string[] = [
+  "/dashboard/admin",
+  "/dashboard/teacher",
+  "/dashboard/student",
+  "/dashboard/courses",
 ];
-const onlyAdmin: string[]   = [
-];
-const onlyTeacher: string[] = [
+const onlyTeacher: string[] = [];
+const requiredPath: string[] = [
+  ...authPage,
+  ...onlyAdmin,
+  "/",
+  "/logout",
+  "/notfound",
+  "/dashboard",
+  "/dashboard/ujian",
+  "/dashboard/profile",
 ];
 
-export default function PageMiddleware(
-  middleware: NextMiddleware,
-  requiredAuth: string[] = []
-) {
+/**
+ * MIDDLEWARE RULES
+ * ----------------------------
+ */
+const PageMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
 
-    if (pathname == "/") {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-    if (requiredAuth.includes(pathname)) {
+    if (requiredPath.includes(pathname)) {
       const token = await getToken({
         req,
         secret: process.env.APP_KEY,
       });
+
+      if (pathname == "/") {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
 
       if (!token && !authPage.includes(pathname)) {
         const url = new URL("/login", req.url);
@@ -45,16 +62,14 @@ export default function PageMiddleware(
           return NextResponse.redirect(new URL("/dashboard", req.url));
         }
 
-        if (token?.role !== "admin" && onlyAdmin.includes(pathname)) {
-          return NextResponse.redirect(new URL("/dashboard", req.url));
-        }
-
-        if (token?.role !== "teacher" && onlyTeacher.includes(pathname)) {
-          return NextResponse.redirect(new URL("/dashboard", req.url));
+        if (token?.id_user_role !== 1 && onlyAdmin.includes(pathname)) {
+          return NextResponse.redirect(new URL("/notfound", req.url));
         }
       }
     }
 
     return middleware(req, next);
   };
-}
+};
+
+export default PageMiddleware;

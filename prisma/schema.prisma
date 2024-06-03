@@ -13,13 +13,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Synonym {
-  id_synonym Int     @id @default(autoincrement())
-  word       String  @db.VarChar(255)
-  tag        String? @db.VarChar(255)
-  synonym    String? @db.VarChar(255)
-
-  @@map("synonym")
+enum ExamStatus {
+  NOT_YET
+  ON_GOING
+  COMPLETED
 }
 
 model User {
@@ -31,7 +28,7 @@ model User {
   created_by    Int      @default(0)
   created_date  DateTime @default(now())
   updated_by    Int      @default(0)
-  updated_date  DateTime @updatedAt
+  updated_date  DateTime?
   deleted_by    Int      @default(0)
   deleted_date  DateTime?
 
@@ -43,4 +40,91 @@ model UserRole {
   role_name     String   @db.VarChar(255)
 
   @@map("user_role")
+}
+
+model Course {
+  id_course     Int       @id @default(autoincrement())
+  name          String    @db.VarChar(255)
+  description   String    @db.VarChar(255)
+  created_by    Int       @default(0)
+  created_date  DateTime  @default(now())
+  updated_by    Int       @default(0)
+  updated_date  DateTime?
+  deleted_by    Int       @default(0)
+  deleted_date  DateTime?
+
+  @@map("course")
+}
+
+model Synonym {
+  id_synonym Int     @id @default(autoincrement())
+  word       String  @db.VarChar(255)
+  tag        String? @db.VarChar(255)
+  synonym    String? @db.VarChar(255)
+
+  @@map("synonym")
+}
+
+model Exam {
+  id_exam       Int       @id @default(autoincrement())
+  title         String    @db.VarChar(255)
+  description   String?   @db.VarChar(255)
+  start_date    DateTime
+  end_date      DateTime
+  duration      Int
+  created_by    Int       @default(0)
+  created_date  DateTime  @default(now())
+  updated_by    Int       @default(0)
+  updated_date  DateTime?
+  deleted_by    Int       @default(0)
+  deleted_date  DateTime?
+
+  @@map("exam")
+}
+
+model ExamMember {
+  id_exam_member  Int         @id @default(autoincrement())
+  id_exam         Int
+  id_user         Int
+  start_date      DateTime
+  end_date        DateTime
+  status          ExamStatus  @default(NOT_YET)
+  created_by      Int         @default(0)
+  created_date    DateTime    @default(now())
+  updated_by      Int         @default(0)
+  updated_date    DateTime?
+  deleted_by      Int         @default(0)
+  deleted_date    DateTime?
+
+  @@map("exam_member")
+}
+
+model ExamQuestion {
+  id_exam_question  Int         @id @default(autoincrement())
+  id_exam           Int
+  question          String      @db.Text
+  answer_key        String      @db.MediumText
+  created_by        Int         @default(0)
+  created_date      DateTime    @default(now())
+  updated_by        Int         @default(0)
+  updated_date      DateTime?
+  deleted_by        Int         @default(0)
+  deleted_date      DateTime?
+
+  @@map("exam_question")
+}
+
+model ExamAnswer {
+  id_exam_answer    BigInt      @id @default(autoincrement())
+  id_exam_question  Int
+  id_user           Int
+  answer            String      @db.MediumText
+  created_by        Int         @default(0)
+  created_date      DateTime    @default(now())
+  updated_by        Int         @default(0)
+  updated_date      DateTime?
+  deleted_by        Int         @default(0)
+  deleted_date      DateTime?
+
+  @@map("exam_answer")
 }

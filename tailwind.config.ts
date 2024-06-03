@@ -12,6 +12,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        transitionProperty: {
+          height: "height",
+        },
         budiluhur: {
           50: "#dbf8ff",
           100: "#b4e6fa",
