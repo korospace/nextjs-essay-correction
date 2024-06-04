@@ -1,4 +1,7 @@
+// external lib
 import { z } from "zod";
+// helpers
+import { DateFormating } from "@/lib/helpers/helpers";
 
 export const UserInputValidation = z.object({
   username: z
@@ -47,23 +50,34 @@ export const CourseUpdateValidation = z.object({
     .max(255, "Description cannot be more than 255 characters"),
 });
 
-const isValidDateFormat = (value: string) => {
-  const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
-  return regex.test(value);
-};
-
 export const ExamInputValidation = z.object({
-  id_course: z
-    .number()
-    .max(99999999999, "Duration cannot be more than 11 digit"),
+  id_course: z.number(),
   title: z.string().max(255, "Title cannot be more than 255 characters"),
   description: z
     .string()
     .max(255, "Description cannot be more than 255 characters"),
-  start_date: z.string().refine(isValidDateFormat, {
+  start_date: z.string().refine(DateFormating.isValidDateFormat, {
     message: "Invalid start date format. Please use yyyy-mm-dd H:i format",
   }),
-  end_date: z.string().refine(isValidDateFormat, {
+  end_date: z.string().refine(DateFormating.isValidDateFormat, {
+    message: "Invalid end date format. Please use yyyy-mm-dd H:i format",
+  }),
+  duration: z
+    .number()
+    .max(99999999999, "Duration cannot be more than 11 digit"),
+});
+
+export const ExamUpdateValidation = z.object({
+  id_exam: z.number(),
+  id_course: z.number(),
+  title: z.string().max(255, "Title cannot be more than 255 characters"),
+  description: z
+    .string()
+    .max(255, "Description cannot be more than 255 characters"),
+  start_date: z.string().refine(DateFormating.isValidDateFormat, {
+    message: "Invalid start date format. Please use yyyy-mm-dd H:i format",
+  }),
+  end_date: z.string().refine(DateFormating.isValidDateFormat, {
     message: "Invalid end date format. Please use yyyy-mm-dd H:i format",
   }),
   duration: z

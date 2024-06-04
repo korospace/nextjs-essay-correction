@@ -1,9 +1,12 @@
 "use client";
 
 // react
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // nextjs
 import { Divider } from "@nextui-org/react";
+// external lib
+import { useRouter } from "next-nprogress-bar";
+import toast from "react-hot-toast";
 // components
 import ExamGeneralInfoForm from "@/lib/components/page/exam/ExamGeneralInfoForm";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
@@ -11,8 +14,33 @@ import TabBarComponent from "@/lib/components/page/TabBarComponent";
 import PageComponent from "@/lib/components/page/PageComponent";
 // types
 import { BreadcrumbItemType, TabBarItemType } from "@/lib/types/ComponentTypes";
+import { ExamType } from "@/lib/types/ResultTypes";
+// services
+import { HttpGetExam } from "@/lib/services/functions/frontend/examFunc";
 
-export default function ExamCreatePage() {
+/**
+ * Props
+ * -----------------------------------
+ */
+type Props = {
+  params: {
+    id_exam: string;
+  };
+};
+
+export default function ExamUpdatePage({ params }: Props) {
+  // -- hook --
+  const router = useRouter();
+
+  // -- use state --
+  const [examGeneralInfo, setExamGeneralInfo] = useState<ExamType>();
+  const [selectedTabKey, setSelectedTabKey] = useState<string>("");
+
+  // -- use effect --
+  useEffect(() => {
+    fetchExamGeneralInfo();
+  }, []);
+
   // -- Breadcrumbs List --
   const breadcrumItems: BreadcrumbItemType[] = [
     {
@@ -26,9 +54,14 @@ export default function ExamCreatePage() {
       href: "/dashboard/exam",
     },
     {
-      title: "Create",
+      title: "Update",
       icon: "fe:arrow-right",
-      href: "/dashboard/exam/create",
+      href: "/dashboard/exam/update/" + params.id_exam,
+    },
+    {
+      title: examGeneralInfo?.title ?? "",
+      icon: "fe:arrow-right",
+      href: "",
     },
   ];
 
@@ -37,25 +70,37 @@ export default function ExamCreatePage() {
     {
       key: "general_information",
       title: "General Information",
-      selected: true,
+      selected: false,
       disable: false,
     },
     {
       key: "exam_question",
       title: "Exam Question",
-      selected: false,
-      disable: true,
+      selected: true,
+      disable: false,
     },
     {
       key: "exam_member",
       title: "Exam Member",
       selected: false,
-      disable: true,
+      disable: false,
     },
   ];
 
-  // -- Use State --
-  const [selectedTabKey, setSelectedTabKey] = useState<string>("");
+  // -- functions --
+  const fetchExamGeneralInfo = async () => {
+    const res = await HttpGetExam("api/exam?id_exam=" + params.id_exam);
+
+    if (res.status == false) {
+      toast.error(res.message);
+    } else {
+      if (res.data.data.length == 0) {
+        router.push("/not-found");
+      } else {
+        setExamGeneralInfo(res.data.data[0]);
+      }
+    }
+  };
 
   return (
     <PageComponent metaTitle="Create Exam">
@@ -81,7 +126,25 @@ export default function ExamCreatePage() {
               selectedTabKey === "general_information" ? "" : "hidden"
             } p-3`}
           >
-            <ExamGeneralInfoForm />
+            <ExamGeneralInfoForm dtGeneralInfo={examGeneralInfo} />
+          </div>
+
+          {/* Exam Question */}
+          <div
+            className={`${
+              selectedTabKey === "exam_question" ? "" : "hidden"
+            } p-3`}
+          >
+            exam question
+          </div>
+
+          {/* Exam Member */}
+          <div
+            className={`${
+              selectedTabKey === "exam_member" ? "" : "hidden"
+            } p-3`}
+          >
+            exam member
           </div>
         </div>
       </main>

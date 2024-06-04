@@ -24,6 +24,7 @@ const authOptions: NextAuthOptions = {
         };
 
         const loginCheck = await Login({ username, password });
+        console.log(loginCheck);
 
         if (loginCheck.status === true) {
           return loginCheck.data;

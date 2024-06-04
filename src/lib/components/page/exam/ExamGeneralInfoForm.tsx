@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 // external lib
 import toast from "react-hot-toast";
+import { useRouter } from "next-nprogress-bar";
 import { Icon } from "@iconify/react/dist/iconify.js";
 // components
-import { DatePicker, Divider } from "@nextui-org/react";
+import { Divider } from "@nextui-org/react";
 import SelectOptionComponent from "../SelectOptionComponent";
 // types
 import { ExamType } from "@/lib/types/ResultTypes";
@@ -15,6 +16,7 @@ import {
   HttpSaveExam,
 } from "@/lib/services/functions/frontend/examFunc";
 import { ExamInputType } from "@/lib/types/InputTypes";
+import { DateFormating } from "@/lib/helpers/helpers";
 
 /**
  * Props
@@ -25,6 +27,9 @@ type Props = {
 };
 
 export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
+  // -- Router --
+  const router = useRouter();
+
   // -- Use State --
   const [courseOpt, setCourseOpt] = useState<SelectOptionType[]>([]);
   const [loadingSubmit, setLoadingSubmit] = useState<boolean>(false);
@@ -41,6 +46,11 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
   useEffect(() => {
     handleFetchCourseOption();
   }, []);
+  useEffect(() => {
+    if (dtGeneralInfo) {
+      setIdCourse(dtGeneralInfo?.course.id_course.toString());
+    }
+  }, [dtGeneralInfo]);
 
   // -- Functions --
   const handleFetchCourseOption = async () => {
@@ -112,6 +122,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
     // build payload
     const httpMethod: string = dtGeneralInfo === undefined ? "POST" : "PUT";
     const httpPayload: ExamInputType = {
+      id_exam: dtGeneralInfo?.id_exam,
       id_course: id_course,
       title: title,
       description: description,
@@ -129,7 +140,9 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
     if (res.status == true) {
       toast.success("exam saved successfully!");
 
-      console.log(res);
+      if (dtGeneralInfo === undefined) {
+        router.push("/dashboard/exam/update/" + res.data.id_exam);
+      }
     } else {
       if (res.message === "validation failed") {
         if (res.data.id_course) {
@@ -175,198 +188,210 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
   };
 
   return (
-    <div className="p-3 bg-budiluhur-500 rounded-md shadow">
-      <h1 className="text-3xl font-extrabold text-budiluhur-700">
-        General Information
-      </h1>
-
-      <div className="my-4">
-        <Divider className="bg-budiluhur-700 opacity-50" />
+    <form onSubmit={handleSubmit} autoComplete="off">
+      {/* Course */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          Course
+        </label>
+        <SelectOptionComponent
+          invalid={idCourseInvalid}
+          defaultValue={dtGeneralInfo?.course.id_course.toString()}
+          dtOption={courseOpt}
+          onChange={(opt) => {
+            setIdCourse(opt.key);
+            setIdCourseInvalid({ invalid: false, message: "" });
+          }}
+        />
       </div>
 
-      <form onSubmit={handleSubmit} autoComplete="off">
-        {/* Course */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            Course
-          </label>
-          <SelectOptionComponent
-            invalid={idCourseInvalid}
-            dtOption={courseOpt}
-            onChange={(opt) => {
-              setIdCourse(opt?.key || "");
-              setIdCourseInvalid({ invalid: false, message: "" });
-            }}
-          />
-        </div>
+      {/* Title */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          Title
+        </label>
+        <input
+          type="text"
+          name="title"
+          defaultValue={dtGeneralInfo?.title}
+          placeholder="Input exam title"
+          className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+            titleInvalid?.invalid
+              ? "bg-red-300 border-red-600 text-red-700"
+              : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+          }`}
+          onChange={() => setTitleInvalid({ invalid: false, message: "" })}
+        />
+        {titleInvalid?.invalid && (
+          <p className="mt-2 text-sm text-red-600">{titleInvalid.message}</p>
+        )}
+      </div>
 
-        {/* Title */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            Title
-          </label>
-          <input
-            type="text"
-            name="title"
-            placeholder="Input exam title"
-            className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-              titleInvalid?.invalid
-                ? "bg-red-300 border-red-600 text-red-700"
-                : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-            }`}
-            onChange={() => setTitleInvalid({ invalid: false, message: "" })}
-          />
-          {titleInvalid?.invalid && (
-            <p className="mt-2 text-sm text-red-600">{titleInvalid.message}</p>
-          )}
-        </div>
+      {/* Description */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          Description
+        </label>
+        <textarea
+          rows={4}
+          name="description"
+          defaultValue={dtGeneralInfo?.description}
+          placeholder="Input exam description"
+          className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+            descriptionInvalid?.invalid
+              ? "bg-red-300 border-red-600 text-red-700"
+              : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+          }`}
+          onChange={() =>
+            setDescriptionInvalid({ invalid: false, message: "" })
+          }
+        ></textarea>
+        {descriptionInvalid?.invalid && (
+          <p className="mt-2 text-sm text-red-600">
+            {descriptionInvalid.message}
+          </p>
+        )}
+      </div>
 
-        {/* Description */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            Description
-          </label>
-          <textarea
-            rows={4}
-            name="description"
-            placeholder="Input exam description"
-            className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-              descriptionInvalid?.invalid
-                ? "bg-red-300 border-red-600 text-red-700"
-                : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-            }`}
-            onChange={() =>
-              setDescriptionInvalid({ invalid: false, message: "" })
-            }
-          ></textarea>
-          {descriptionInvalid?.invalid && (
-            <p className="mt-2 text-sm text-red-600">
-              {descriptionInvalid.message}
-            </p>
-          )}
-        </div>
-
-        {/* Start Date */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            Start Date
-          </label>
-          <div className="w-full max-w-lg flex gap-2">
-            <div className="w-3/5">
-              <input
-                type="date"
-                name="start_date"
-                className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-                  startDateInvalid?.invalid
-                    ? "bg-red-300 border-red-600 text-red-700"
-                    : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-                }`}
-                onChange={() =>
-                  setStartDateInvalid({ invalid: false, message: "" })
-                }
-              />
-              {startDateInvalid?.invalid && (
-                <p className="mt-2 text-sm text-red-600">
-                  {startDateInvalid.message}
-                </p>
-              )}
-            </div>
-            <div className="flex-1">
-              <input
-                type="time"
-                name="start_time"
-                className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-                  startDateInvalid?.invalid
-                    ? "bg-red-300 border-red-600 text-red-700"
-                    : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-                }`}
-                onChange={() =>
-                  setStartDateInvalid({ invalid: false, message: "" })
-                }
-              />
-            </div>
+      {/* Start Date */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          Start Date
+        </label>
+        <div className="w-full max-w-lg flex gap-2">
+          <div className="w-3/5">
+            <input
+              type="date"
+              name="start_date"
+              defaultValue={
+                dtGeneralInfo
+                  ? DateFormating.extractDateTime(dtGeneralInfo.start_date).date
+                  : ""
+              }
+              className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+                startDateInvalid?.invalid
+                  ? "bg-red-300 border-red-600 text-red-700"
+                  : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+              }`}
+              onChange={() =>
+                setStartDateInvalid({ invalid: false, message: "" })
+              }
+            />
+            {startDateInvalid?.invalid && (
+              <p className="mt-2 text-sm text-red-600">
+                {startDateInvalid.message}
+              </p>
+            )}
+          </div>
+          <div className="flex-1">
+            <input
+              type="time"
+              name="start_time"
+              defaultValue={
+                dtGeneralInfo
+                  ? DateFormating.extractDateTime(dtGeneralInfo.start_date).time
+                  : ""
+              }
+              className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+                startDateInvalid?.invalid
+                  ? "bg-red-300 border-red-600 text-red-700"
+                  : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+              }`}
+              onChange={() =>
+                setStartDateInvalid({ invalid: false, message: "" })
+              }
+            />
           </div>
         </div>
+      </div>
 
-        {/* End Date */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            End Date
-          </label>
-          <div className="w-full max-w-lg flex gap-2">
-            <div className="w-3/5">
-              <input
-                type="date"
-                name="end_date"
-                className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-                  endDateInvalid?.invalid
-                    ? "bg-red-300 border-red-600 text-red-700"
-                    : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-                }`}
-                onChange={() =>
-                  setEndDateInvalid({ invalid: false, message: "" })
-                }
-              />
-              {endDateInvalid?.invalid && (
-                <p className="mt-2 text-sm text-red-600">
-                  {endDateInvalid.message}
-                </p>
-              )}
-            </div>
-            <div className="flex-1">
-              <input
-                type="time"
-                name="end_time"
-                className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-                  endDateInvalid?.invalid
-                    ? "bg-red-300 border-red-600 text-red-700"
-                    : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-                }`}
-                onChange={() =>
-                  setEndDateInvalid({ invalid: false, message: "" })
-                }
-              />
-            </div>
+      {/* End Date */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          End Date
+        </label>
+        <div className="w-full max-w-lg flex gap-2">
+          <div className="w-3/5">
+            <input
+              type="date"
+              name="end_date"
+              defaultValue={
+                dtGeneralInfo
+                  ? DateFormating.extractDateTime(dtGeneralInfo.end_date).date
+                  : ""
+              }
+              className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+                endDateInvalid?.invalid
+                  ? "bg-red-300 border-red-600 text-red-700"
+                  : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+              }`}
+              onChange={() =>
+                setEndDateInvalid({ invalid: false, message: "" })
+              }
+            />
+            {endDateInvalid?.invalid && (
+              <p className="mt-2 text-sm text-red-600">
+                {endDateInvalid.message}
+              </p>
+            )}
+          </div>
+          <div className="flex-1">
+            <input
+              type="time"
+              name="end_time"
+              defaultValue={
+                dtGeneralInfo
+                  ? DateFormating.extractDateTime(dtGeneralInfo.start_date).time
+                  : ""
+              }
+              className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+                endDateInvalid?.invalid
+                  ? "bg-red-300 border-red-600 text-red-700"
+                  : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+              }`}
+              onChange={() =>
+                setEndDateInvalid({ invalid: false, message: "" })
+              }
+            />
           </div>
         </div>
+      </div>
 
-        {/* Duration */}
-        <div className="mb-5">
-          <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
-            Duration{" "}
-            <small>
-              <i>(in minute)</i>
-            </small>
-          </label>
-          <input
-            type="number"
-            name="duration"
-            placeholder="Input exam duration"
-            className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-              durationInvalid?.invalid
-                ? "bg-red-300 border-red-600 text-red-700"
-                : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
-            }`}
-            onChange={() => setDurationInvalid({ invalid: false, message: "" })}
-          />
-          {durationInvalid?.invalid && (
-            <p className="mt-2 text-sm text-red-600">
-              {durationInvalid.message}
-            </p>
-          )}
-        </div>
+      {/* Duration */}
+      <div className="mb-5">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+          Duration{" "}
+          <small>
+            <i>(in minute)</i>
+          </small>
+        </label>
+        <input
+          type="number"
+          name="duration"
+          defaultValue={dtGeneralInfo?.duration}
+          placeholder="Input exam duration"
+          className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+            durationInvalid?.invalid
+              ? "bg-red-300 border-red-600 text-red-700"
+              : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
+          }`}
+          onChange={() => setDurationInvalid({ invalid: false, message: "" })}
+        />
+        {durationInvalid?.invalid && (
+          <p className="mt-2 text-sm text-red-600">{durationInvalid.message}</p>
+        )}
+      </div>
 
-        <button
-          type="submit"
-          className="flex items-center py-2.5 px-5 mt-10 text-sm font-medium text-budiluhur-400 focus:outline-none bg-budiluhur-700 rounded-md hover:bg-budiluhur-600 hover:text-budiluhur-300 focus:bg-budiluhur-600 focus:text-budiluhur-300"
-        >
-          <Icon
-            icon="eos-icons:loading"
-            className={`mr-2 ${loadingSubmit ? "" : "hidden"}`}
-          />
-          Save
-        </button>
-      </form>
-    </div>
+      <button
+        type="submit"
+        className="flex items-center py-2.5 px-5 mt-10 text-sm font-medium text-budiluhur-400 focus:outline-none bg-budiluhur-700 rounded-md hover:bg-budiluhur-600 hover:text-budiluhur-300 focus:bg-budiluhur-600 focus:text-budiluhur-300"
+      >
+        <Icon
+          icon="eos-icons:loading"
+          className={`mr-2 ${loadingSubmit ? "" : "hidden"}`}
+        />
+        Save
+      </button>
+    </form>
   );
 }

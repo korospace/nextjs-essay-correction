@@ -1,5 +1,5 @@
 // react
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // types
 import { InvalidFieldType, SelectOptionType } from "@/lib/types/ComponentTypes";
 
@@ -9,23 +9,34 @@ import { InvalidFieldType, SelectOptionType } from "@/lib/types/ComponentTypes";
  */
 type Props = {
   invalid?: InvalidFieldType;
+  defaultValue?: string;
   dtOption: SelectOptionType[];
-  onChange: (data: SelectOptionType | null) => void;
+  onChange: (data: SelectOptionType) => void;
 };
 
 export default function SelectOptionComponent({
   invalid,
+  defaultValue,
   dtOption,
   onChange,
 }: Props) {
   // -- Use State --
   const [selectedKey, setSelectedKey] = useState<string>("");
 
+  // -- Use Effect --
+  useEffect(() => {
+    if (defaultValue) {
+      setSelectedKey(defaultValue);
+    }
+  }, [defaultValue]);
+
   // -- Functions --
   const handleOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedKey(e.target.value);
     const opt = dtOption.find((row) => row.key === e.target.value);
-    onChange(opt ?? null);
+    if (opt) {
+      onChange(opt);
+    }
   };
 
   return (

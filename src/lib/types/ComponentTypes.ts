@@ -29,3 +29,10 @@ export type SelectOptionType = {
   key: string;
   value: string;
 };
+
+export type TabBarItemType = {
+  key: string;
+  title: string;
+  selected: boolean;
+  disable: boolean;
+};

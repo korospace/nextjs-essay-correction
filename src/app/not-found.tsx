@@ -2,7 +2,7 @@
 
 // nextjs
 import { Button } from "@nextui-org/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next-nprogress-bar";
 // component
 import PageComponent from "@/lib/components/page/PageComponent";
 
@@ -22,7 +22,7 @@ export default function NotFoundPage() {
           radius="sm"
           color="primary"
           className="text-sm px-10 py-2.5"
-          onClick={() => router.back()}
+          onClick={() => router.push("/")}
         >
           Back
         </Button>

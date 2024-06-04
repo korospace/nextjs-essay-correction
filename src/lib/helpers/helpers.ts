@@ -27,7 +27,50 @@ export const ResponseFormating = {
   },
 };
 
-export const Hash = {
+export const DateFormating = {
+  isValidDateFormat: (value: string) => {
+    const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/;
+    return regex.test(value);
+  },
+  getCurrentUnixTimestamp: () => {
+    return Math.floor(Date.now() / 1000);
+  },
+  toUnixTimeStamp: (dateString: string) => {
+    const date = new Date(dateString);
+    return Math.floor(date.getTime() / 1000);
+  },
+  changeDateFormat: (originalDate: string) => {
+    // Split the original date into parts
+    const parts = originalDate.split(/[-\/]/);
+    // Extract day, month, and year from the original date
+    const year = parts[0];
+    const month = parts[1];
+    const day = parts[2];
+
+    return `${day}-${month}-${year}`;
+  },
+  extractDateTime: (datetime: string) => {
+    const dateObj = new Date(datetime);
+
+    // Extract date components
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0"); // Months are zero-indexed
+    const day = String(dateObj.getDate()).padStart(2, "0");
+
+    // Extract time components
+    const hours = String(dateObj.getHours()).padStart(2, "0");
+    const minutes = String(dateObj.getMinutes()).padStart(2, "0");
+
+    // Construct date and time strings
+    const date = `${year}-${month}-${day}`;
+    const time = `${hours}:${minutes}`;
+
+    // Return date and time object
+    return { date, time };
+  },
+};
+
+export const HashText = {
   encrypt: (plainText: string): string => {
     const hash = CryptoJS.AES.encrypt(
       plainText,
@@ -55,4 +98,12 @@ export const Hash = {
       return false;
     }
   },
+};
+
+export const pathCheck = (path: string, pathList: string[]): boolean => {
+  return pathList.some((p) => {
+    const regex = new RegExp(`^${p}(\/\\d+)?$`);
+
+    return regex.test(path);
+  });
 };

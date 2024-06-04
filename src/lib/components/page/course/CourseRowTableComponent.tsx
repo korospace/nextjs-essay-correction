@@ -3,9 +3,9 @@ import { Fragment, useState } from "react";
 // external lib
 import { Icon } from "@iconify/react/dist/iconify.js";
 // type
-import { CourseType, UserType } from "@/lib/types/ResultTypes";
-import CourseFormComponent from "./CourseFormComponent";
+import { CourseType } from "@/lib/types/ResultTypes";
 // components
+import CourseFormComponent from "./CourseFormComponent";
 
 /**
  * Props

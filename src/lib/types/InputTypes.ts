@@ -47,3 +47,14 @@ export type ExamInputType = {
   end_date: string;
   duration: number;
 };
+
+export type ExamWhereType = {
+  id_exam?: any;
+  created_by?: any;
+  exam_member?: any;
+  OR?: {
+    id_course?: any;
+    status?: any;
+    title?: any;
+  }[];
+};

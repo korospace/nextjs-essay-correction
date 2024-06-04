@@ -43,12 +43,13 @@ export type CourseType = {
 
 export type ExamType = {
   id_exam: number;
-  id_course: number;
   title: string;
   description: string;
   start_date: string;
   end_date: string;
   duration: number;
+  course: CourseType;
+  exam_member: ExamMemberType[];
 };
 
 export type ExamMemberType = {

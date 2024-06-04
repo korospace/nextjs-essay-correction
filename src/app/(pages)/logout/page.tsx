@@ -25,7 +25,7 @@ export default function LogoutPage() {
     try {
       await signOut({ redirect: false });
       toast.success("Logout success!");
-      router.push("/");
+      router.push("/login");
     } catch (error) {
       toast.error("An error occurred while logging out.");
     } finally {

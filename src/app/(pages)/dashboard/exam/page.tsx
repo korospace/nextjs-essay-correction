@@ -6,15 +6,21 @@ import { useEffect, useState } from "react";
 import { Divider } from "@nextui-org/react";
 import { useSession } from "next-auth/react";
 // external lib
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next-nprogress-bar";
+import toast from "react-hot-toast";
 // components
+import ExamRowTableComponent from "@/lib/components/page/exam/ExamRowTableComponent";
 import ExamFilterComponent from "@/lib/components/page/exam/ExamFilterComponent";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
+import PaginationComponent from "@/lib/components/page/PaginationComponent";
 import SearchbarComponent from "@/lib/components/page/SearchbarComponent";
 import PageComponent from "@/lib/components/page/PageComponent";
 // types
 import { BreadcrumbItemType } from "@/lib/types/ComponentTypes";
-import { SessionType } from "@/lib/types/ResultTypes";
+import { ExamType, SessionType } from "@/lib/types/ResultTypes";
+// services
+import { HttpGetExam } from "@/lib/services/functions/frontend/examFunc";
 
 export default function ExamPage() {
   // router
@@ -41,13 +47,42 @@ export default function ExamPage() {
   const [page, setPage] = useState<number>(1);
   const [limit, setLimit] = useState<number>(5);
   const [keyword, setKeyword] = useState<string>("");
-  const [showForm, setShowForm] = useState<boolean>(false);
+  const [idCourse, setIdCourse] = useState<string>("");
+  const [statusExam, setStatusExam] = useState<string>("");
+  const [totalRow, setTotalRow] = useState<number>(0);
+  const [totalPage, setTotalPage] = useState<number>(2);
+  const [colspan, setColspan] = useState<number>(6);
   const [dataSession, setDataSession] = useState<SessionType>();
+  const [examList, setExamList] = useState<ExamType[]>([]);
+  const [examListLoading, setExamListLoading] = useState<boolean>(false);
 
   // -- Use Effect --
   useEffect(() => {
     setDataSession(session);
+    if (session?.user.id_user_role === 3) {
+      setColspan(7);
+    }
   }, [session]);
+  useEffect(() => {
+    handleFetchExam();
+  }, [page, keyword, idCourse, statusExam]);
+
+  // -- functions --
+  const handleFetchExam = async () => {
+    setExamListLoading(true);
+    const res = await HttpGetExam(
+      `api/exam?id_course=${idCourse}&status=${statusExam}&keyword=${keyword}&page=${page}&limit=${limit}`
+    );
+    setExamListLoading(false);
+
+    if (res.status == false) {
+      toast.error(res.message);
+    } else {
+      setExamList(res.data.data);
+      setTotalRow(res.data.totalRow);
+      setTotalPage(res.data.totalPage);
+    }
+  };
 
   return (
     <PageComponent metaTitle="Exam">
@@ -61,11 +96,15 @@ export default function ExamPage() {
 
         {/* Filter && Search Bar */}
         <div className="flex gap-2">
-          <ExamFilterComponent />
+          <ExamFilterComponent
+            showStatusOpt={dataSession?.user.id_user_role === 3}
+            courseOnChange={(opt) => setIdCourse(opt.key)}
+            statusOnChange={(opt) => setStatusExam(opt.key)}
+          />
           <SearchbarComponent
             className="flex-1"
             placeholder="Search exam title"
-            showBtnAdd={dataSession?.user.id_user_role === 1}
+            showBtnAdd={[1, 2].includes(dataSession?.user.id_user_role ?? 0)}
             searchOnEnter={(keyword) => setKeyword(keyword)}
             btnOnClick={() => router.push("/dashboard/exam/create")}
           />
@@ -81,23 +120,78 @@ export default function ExamPage() {
                   NO
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Course Name
+                  Course
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Exam Title
+                  Title
                 </th>
+                <th scope="col" className="px-6 py-3">
+                  Description
+                </th>
+                {dataSession?.user.id_user_role === 3 && (
+                  <th scope="col" className="px-6 py-3">
+                    Status
+                  </th>
+                )}
                 <th scope="col" className="px-6 py-3">
                   Schedule Info
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Status
                 </th>
                 <th scope="col" className="px-6 py-3 text-right">
                   Action
                 </th>
               </tr>
             </thead>
+
+            <tbody>
+              {examListLoading ? (
+                // Loading
+                <tr
+                  className={`border-b border-budiluhur-700 bg-budiluhur-300`}
+                >
+                  <td colSpan={colspan} className="px-6 py-4">
+                    <div className="flex justify-center">
+                      <Icon icon="eos-icons:loading" className={`text-2xl`} />
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                <>
+                  {examList.length === 0 ? (
+                    <tr
+                      className={`border-b border-budiluhur-700 bg-budiluhur-300`}
+                    >
+                      <td colSpan={colspan} className="px-6 py-4">
+                        <div className="flex justify-center">
+                          data not found
+                        </div>
+                      </td>
+                    </tr>
+                  ) : (
+                    // List Exam
+                    examList.map((row: ExamType, index: number) => (
+                      <ExamRowTableComponent
+                        key={index}
+                        dtExam={row}
+                        no={index + 1 + (page - 1) * limit}
+                        onDelete={(dtExam) => {}}
+                      />
+                    ))
+                  )}
+                </>
+              )}
+            </tbody>
           </table>
+        </div>
+
+        {/* Pagination */}
+        <div className="mt-5">
+          <PaginationComponent
+            page={page}
+            totalRow={totalRow}
+            totalPage={totalPage}
+            prev={() => setPage(page - 1)}
+            next={() => setPage(page + 1)}
+          />
         </div>
       </main>
     </PageComponent>

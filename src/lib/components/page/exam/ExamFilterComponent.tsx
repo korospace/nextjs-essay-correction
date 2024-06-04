@@ -16,9 +16,17 @@ import {
  * Props
  * -----------------------------------
  */
-type Props = {};
+type Props = {
+  showStatusOpt?: boolean;
+  courseOnChange: (opt: SelectOptionType) => void;
+  statusOnChange: (opt: SelectOptionType) => void;
+};
 
-export default function ExamFilterComponent({}: Props) {
+export default function ExamFilterComponent({
+  showStatusOpt,
+  courseOnChange,
+  statusOnChange,
+}: Props) {
   // -- Use State --
   const [statusOpt, setStatusOpt] = useState<SelectOptionType[]>([]);
   const [courseOpt, setCourseOpt] = useState<SelectOptionType[]>([]);
@@ -47,17 +55,20 @@ export default function ExamFilterComponent({}: Props) {
   return (
     <div className="flex gap-2">
       <SelectOptionComponent
-        dtOption={statusOpt}
-        onChange={(opt) => {
-          console.log(opt);
-        }}
-      />
-      <SelectOptionComponent
         dtOption={courseOpt}
         onChange={(opt) => {
-          console.log(opt);
+          courseOnChange(opt);
         }}
       />
+      {showStatusOpt ||
+        (showStatusOpt === undefined && (
+          <SelectOptionComponent
+            dtOption={statusOpt}
+            onChange={(opt) => {
+              statusOnChange(opt);
+            }}
+          />
+        ))}
     </div>
   );
 }

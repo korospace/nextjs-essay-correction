@@ -7,6 +7,8 @@ import {
   NextResponse,
 } from "next/server";
 import { MiddlewareFactoryType } from "../types/ResultTypes";
+// helpers
+import { pathCheck } from "../helpers/helpers";
 
 /**
  * MIDDLEWARE PATH
@@ -14,25 +16,22 @@ import { MiddlewareFactoryType } from "../types/ResultTypes";
  */
 const authPage: string[] = ["/login"];
 const noCallbackUrl: string[] = ["/logout", "/notfound"];
-const onlyTeacher: string[] = [
-  "/dashboard/exam/create",
-  "/dashboard/exam/update",
-];
-const onlyAdmin: string[] = [
+const examPage: string[] = ["/dashboard/exam/create", "/dashboard/exam/update"];
+const adminPage: string[] = [
   "/dashboard/admin",
   "/dashboard/teacher",
   "/dashboard/student",
   "/dashboard/courses",
-  ...onlyTeacher,
 ];
 const requiredPath: string[] = [
   "/",
   "/dashboard",
   "/dashboard/exam",
   "/dashboard/profile",
-  ...noCallbackUrl,
   ...authPage,
-  ...onlyAdmin,
+  ...noCallbackUrl,
+  ...examPage,
+  ...adminPage,
 ];
 
 /**
@@ -43,7 +42,7 @@ const PageMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
 
-    if (requiredPath.includes(pathname)) {
+    if (pathCheck(pathname, requiredPath)) {
       const token = await getToken({
         req,
         secret: process.env.APP_KEY,
@@ -71,15 +70,17 @@ const PageMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
       }
 
       if (token) {
+        // only admin
+        if (pathCheck(pathname, adminPage) && token?.id_user_role !== 1) {
+          return NextResponse.redirect(new URL("/not-found", req.url));
+        }
+        // exam page
         if (
-          onlyTeacher.includes(pathname) &&
+          pathCheck(pathname, examPage) &&
           token?.id_user_role !== 1 &&
           token?.id_user_role !== 2
         ) {
-          return NextResponse.redirect(new URL("/notfound", req.url));
-        }
-        if (onlyAdmin.includes(pathname) && token?.id_user_role !== 1) {
-          return NextResponse.redirect(new URL("/notfound", req.url));
+          return NextResponse.redirect(new URL("/not-found", req.url));
         }
       }
     }

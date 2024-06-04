@@ -15,7 +15,7 @@ export const GetExamStatuOpt = (): SelectOptionType[] => {
   return [
     {
       key: "",
-      value: "Choose Status",
+      value: "-- Status --",
     },
     {
       key: "not_yet",
@@ -46,7 +46,7 @@ export const GetExamCourseOpt = async (): Promise<ApiResponseType> => {
       const opt: SelectOptionType[] = [
         {
           key: "",
-          value: "Choose Course",
+          value: "-- Course --",
         },
       ];
 
@@ -72,6 +72,42 @@ export const GetExamCourseOpt = async (): Promise<ApiResponseType> => {
 };
 
 /**
+ * Get Exam
+ * --------------------------
+ */
+export const HttpGetExam = async (path: string): Promise<ApiResponseType> => {
+  try {
+    const res = await fetch(baseUrl + path, {
+      method: "GET",
+      next: {
+        tags: ["exam"],
+      },
+      // cache: "force-cache",
+    });
+
+    const resJson = await res.json();
+
+    if (res.ok) {
+      return {
+        status: true,
+        message: "Exam retrieved successfully",
+        data: resJson.data,
+      };
+    } else {
+      return {
+        status: false,
+        message: resJson.message,
+      };
+    }
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.message,
+    };
+  }
+};
+
+/**
  * Create & Update Exam
  * --------------------------
  */
@@ -92,7 +128,7 @@ export const HttpSaveExam = async (
       return {
         status: true,
         message: "Exam save successfully",
-        data: resJson,
+        data: resJson.data,
       };
     } else {
       return {

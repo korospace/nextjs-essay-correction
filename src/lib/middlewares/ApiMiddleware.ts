@@ -2,7 +2,7 @@
 import { getToken } from "next-auth/jwt";
 import { NextFetchEvent, NextMiddleware, NextRequest } from "next/server";
 // helpers
-import { ResponseFormating } from "../helpers/helpers";
+import { ResponseFormating, pathCheck } from "../helpers/helpers";
 // types
 import { MiddlewareFactoryType } from "../types/ResultTypes";
 
@@ -10,12 +10,12 @@ import { MiddlewareFactoryType } from "../types/ResultTypes";
  * MIDDLEWARE PATH
  * ----------------------------
  */
-const onlyTeacher: string[] = [
+const examApi: string[] = [
   "/api/exam/create",
   "/api/exam/update",
   "/api/exam/delete",
 ];
-const onlyAdmin: string[] = [
+const adminApi: string[] = [
   "/api/admin",
   "/api/teacher",
   "/api/student",
@@ -26,9 +26,9 @@ const onlyAdmin: string[] = [
 const requiredPath: string[] = [
   "/api/courses",
   "/api/profile",
-  "/api/ujian",
-  ...onlyTeacher,
-  ...onlyAdmin,
+  "/api/exam",
+  ...examApi,
+  ...adminApi,
 ];
 
 /**
@@ -39,7 +39,7 @@ const ApiMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
 
-    if (requiredPath.includes(pathname)) {
+    if (pathCheck(pathname, requiredPath)) {
       const token = await getToken({
         req,
         secret: process.env.APP_KEY,
@@ -48,14 +48,16 @@ const ApiMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
       if (!token) {
         return ResponseFormating.json("Unauthorized", 401);
       } else if (token) {
+        // admin api
+        if (token?.id_user_role !== 1 && adminApi.includes(pathname)) {
+          return ResponseFormating.json("Unauthorized", 401);
+        }
+        // exam api
         if (
           token?.id_user_role !== 1 &&
           token?.id_user_role !== 2 &&
-          onlyTeacher.includes(pathname)
+          pathCheck(pathname, examApi)
         ) {
-          return ResponseFormating.json("Unauthorized", 401);
-        }
-        if (token?.id_user_role !== 1 && onlyAdmin.includes(pathname)) {
           return ResponseFormating.json("Unauthorized", 401);
         }
       }

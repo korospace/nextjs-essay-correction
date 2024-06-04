@@ -1,7 +1,7 @@
 // prisma
 import { prisma } from "@/lib/db/prisma";
 // helpers
-import { Hash } from "@/lib/helpers/helpers";
+import { HashText } from "@/lib/helpers/helpers";
 // types
 import { LoginInputType } from "@/lib/types/InputTypes";
 import { ApiResponseType } from "@/lib/types/ResultTypes";
@@ -25,7 +25,7 @@ export async function Login(
       };
     } else {
       // confirm password
-      const confirmPass = Hash.compare(dataInput.password, dtUser.password);
+      const confirmPass = HashText.compare(dataInput.password, dtUser.password);
 
       if (!confirmPass) {
         return {

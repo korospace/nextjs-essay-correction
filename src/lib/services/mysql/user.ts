@@ -3,7 +3,7 @@ import { revalidateTag } from "next/cache";
 // prisma
 import { prisma } from "@/lib/db/prisma";
 // helpers
-import { Hash } from "@/lib/helpers/helpers";
+import { HashText } from "@/lib/helpers/helpers";
 // types
 import {
   PaginationOptions,
@@ -72,7 +72,7 @@ export async function CreateUser(
       return { status: false, code: 400, message: "username is exist" };
     } else {
       // insert to user table
-      dataInput.password = Hash.encrypt(dataInput.password ?? "");
+      dataInput.password = HashText.encrypt(dataInput.password ?? "");
 
       const newUser = await prisma.user.create({
         data: {
@@ -132,7 +132,7 @@ export async function UpdateUser(
 
       // update to user table
       if (dataInput.password !== "" && dataInput.password !== undefined) {
-        dataInput.password = Hash.encrypt(dataInput.password ?? "");
+        dataInput.password = HashText.encrypt(dataInput.password ?? "");
       } else {
         dataInput.password = dtUser?.password || "";
       }

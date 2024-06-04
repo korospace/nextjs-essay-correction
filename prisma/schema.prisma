@@ -31,6 +31,7 @@ model User {
   updated_date  DateTime?
   deleted_by    Int      @default(0)
   deleted_date  DateTime?
+  exam_member   ExamMember[]
 
   @@map("user")
 }
@@ -40,6 +41,15 @@ model UserRole {
   role_name     String   @db.VarChar(255)
 
   @@map("user_role")
+}
+
+model Synonym {
+  id_synonym Int     @id @default(autoincrement())
+  word       String  @db.VarChar(255)
+  tag        String? @db.VarChar(255)
+  synonym    String? @db.VarChar(255)
+
+  @@map("synonym")
 }
 
 model Course {
@@ -52,17 +62,9 @@ model Course {
   updated_date  DateTime?
   deleted_by    Int       @default(0)
   deleted_date  DateTime?
+  exams         Exam[]
 
   @@map("course")
-}
-
-model Synonym {
-  id_synonym Int     @id @default(autoincrement())
-  word       String  @db.VarChar(255)
-  tag        String? @db.VarChar(255)
-  synonym    String? @db.VarChar(255)
-
-  @@map("synonym")
 }
 
 model Exam {
@@ -79,6 +81,8 @@ model Exam {
   updated_date  DateTime?
   deleted_by    Int       @default(0)
   deleted_date  DateTime?
+  course        Course @relation(fields: [id_course], references: [id_course])
+  exam_member   ExamMember[]
 
   @@map("exam")
 }
@@ -87,8 +91,8 @@ model ExamMember {
   id_exam_member  Int         @id @default(autoincrement())
   id_exam         Int
   id_user         Int
-  start_date      DateTime
-  end_date        DateTime
+  start_date      DateTime?
+  end_date        DateTime?
   status          ExamStatus  @default(NOT_YET)
   created_by      Int         @default(0)
   created_date    DateTime    @default(now())
@@ -96,36 +100,38 @@ model ExamMember {
   updated_date    DateTime?
   deleted_by      Int         @default(0)
   deleted_date    DateTime?
+  exam            Exam @relation(fields: [id_exam], references: [id_exam])
+  user            User @relation(fields: [id_user], references: [id_user])
 
   @@map("exam_member")
 }
 
-model ExamQuestion {
-  id_exam_question  Int         @id @default(autoincrement())
-  id_exam           Int
-  question          String      @db.Text
-  answer_key        String      @db.MediumText
-  created_by        Int         @default(0)
-  created_date      DateTime    @default(now())
-  updated_by        Int         @default(0)
-  updated_date      DateTime?
-  deleted_by        Int         @default(0)
-  deleted_date      DateTime?
+// model ExamQuestion {
+//   id_exam_question  Int         @id @default(autoincrement())
+//   id_exam           Int
+//   question          String      @db.Text
+//   answer_key        String      @db.MediumText
+//   created_by        Int         @default(0)
+//   created_date      DateTime    @default(now())
+//   updated_by        Int         @default(0)
+//   updated_date      DateTime?
+//   deleted_by        Int         @default(0)
+//   deleted_date      DateTime?
 
-  @@map("exam_question")
-}
+//   @@map("exam_question")
+// }
 
-model ExamAnswer {
-  id_exam_answer    BigInt      @id @default(autoincrement())
-  id_exam_question  Int
-  id_user           Int
-  answer            String      @db.MediumText
-  created_by        Int         @default(0)
-  created_date      DateTime    @default(now())
-  updated_by        Int         @default(0)
-  updated_date      DateTime?
-  deleted_by        Int         @default(0)
-  deleted_date      DateTime?
+// model ExamAnswer {
+//   id_exam_answer    BigInt      @id @default(autoincrement())
+//   id_exam_question  Int
+//   id_user           Int
+//   answer            String      @db.MediumText
+//   created_by        Int         @default(0)
+//   created_date      DateTime    @default(now())
+//   updated_by        Int         @default(0)
+//   updated_date      DateTime?
+//   deleted_by        Int         @default(0)
+//   deleted_date      DateTime?
 
-  @@map("exam_answer")
-}
+//   @@map("exam_answer")
+// }
