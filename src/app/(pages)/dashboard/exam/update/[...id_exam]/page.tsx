@@ -12,6 +12,7 @@ import ExamGeneralInfo from "@/lib/components/page/exam/form/ExamGeneralInfo";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
 import ExamQuestion from "@/lib/components/page/exam/form/ExamQuestion";
 import TabBarComponent from "@/lib/components/page/TabBarComponent";
+import ExamMember from "@/lib/components/page/exam/form/ExamMember";
 import PageComponent from "@/lib/components/page/PageComponent";
 // types
 import { BreadcrumbItemType, TabBarItemType } from "@/lib/types/ComponentTypes";
@@ -145,7 +146,7 @@ export default function ExamUpdatePage({ params }: Props) {
               selectedTabKey === "exam_member" ? "" : "hidden"
             } p-4 bg-budiluhur-400 shadow rounded`}
           >
-            exam member
+            <ExamMember dtGeneralInfo={examGeneralInfo} />
           </div>
         </div>
       </main>
