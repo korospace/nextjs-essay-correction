@@ -27,6 +27,7 @@ const requiredPath: string[] = [
   "/api/courses",
   "/api/profile",
   "/api/exam",
+  "/api/autocomplete",
   ...examApi,
   ...adminApi,
 ];

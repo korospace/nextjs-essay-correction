@@ -112,3 +112,21 @@ export type ExamQuestionWhereType = {
     question?: any;
   }[];
 };
+
+/**
+ * Exam Member
+ * --------------------------
+ */
+export type ExamMemberInputType = {
+  id_exam: number;
+  id_user: number;
+};
+
+export type ExamMemberSearchParamType = SearchParamsType & {
+  id_exam: string;
+};
+
+export type ExamMemberWhereType = {
+  id_exam?: any;
+  user?: any;
+};

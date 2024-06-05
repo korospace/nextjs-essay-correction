@@ -11,6 +11,8 @@ import {
   UserSearchType,
 } from "@/lib/types/InputTypes";
 import { ApiResponseType } from "@/lib/types/ResultTypes";
+import { SelectOptionType } from "@/lib/types/ComponentTypes";
+import { EssayCorrection } from "@/lib/helpers/essay_correction";
 
 /**
  * Get User
@@ -201,5 +203,56 @@ export async function DeleteUser(
     }
   } catch (error: any) {
     return { status: true, code: 500, message: error.message };
+  }
+}
+
+/**
+ * Student - Autocomplete
+ * -------------------------------
+ */
+export async function GetStudentAuctocomplete(
+  keyword: string
+): Promise<ApiResponseType> {
+  try {
+    const newKeyword = EssayCorrection.cleanText(keyword);
+
+    // get rows
+    const listUser = await prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            username: {
+              contains: newKeyword,
+            },
+          },
+          {
+            full_name: {
+              contains: newKeyword,
+            },
+          },
+        ],
+        id_user_role: 3,
+        deleted_by: 0,
+      },
+      take: 10,
+    });
+
+    // build data
+    let data: SelectOptionType[] = [];
+    listUser.map((row) => {
+      data.push({
+        key: row.id_user.toString(),
+        value: row.username + " - " + row.full_name,
+      });
+    });
+
+    return {
+      status: true,
+      code: 200,
+      message: "user autocomplete",
+      data: data,
+    };
+  } catch (error: any) {
+    return { status: false, code: 500, message: error.message };
   }
 }

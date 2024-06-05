@@ -31,7 +31,7 @@ export default function ExamQuestion({ dtGeneralInfo }: Props) {
   const [limit, setLimit] = useState<number>(5);
   const [keyword, setKeyword] = useState<string>("");
   const [totalRow, setTotalRow] = useState<number>(0);
-  const [totalPage, setTotalPage] = useState<number>(2);
+  const [totalPage, setTotalPage] = useState<number>(0);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [questionList, setQuestionList] = useState<ExamQuestionType[]>([]);
   const [questionListLoading, setQuestionListLoading] =

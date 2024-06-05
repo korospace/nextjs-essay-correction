@@ -121,3 +121,12 @@ export const ExamQuestionUpdateValidation = z.object({
     .string()
     .max(1000, "Answer key cannot be more than 1000 characters"),
 });
+
+/**
+ * Exam Member
+ * ------------------------------------------
+ */
+export const ExamMemberInputValidation = z.object({
+  id_exam: z.number(),
+  id_user: z.number(),
+});

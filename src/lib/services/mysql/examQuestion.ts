@@ -72,7 +72,7 @@ export async function GetExamQuestion(
     return {
       status: true,
       code: 200,
-      message: "exam list",
+      message: "exam member list",
       totalPage: limit ? Math.ceil(countRow / parseInt(limit)) : 0,
       totalRow: countRow,
       data: listExamQuestion,

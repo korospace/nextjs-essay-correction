@@ -62,7 +62,7 @@ export const HttpSaveExamQuestion = async (
     if (res.ok) {
       return {
         status: true,
-        message: "Exam member save successfully",
+        message: "Exam question save successfully",
         data: resJson.data,
       };
     } else {

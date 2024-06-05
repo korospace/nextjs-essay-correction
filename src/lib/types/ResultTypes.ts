@@ -60,6 +60,7 @@ export type ExamMemberType = {
   start_date?: string;
   end_date?: string;
   status?: string;
+  user: UserType;
 };
 
 export type ExamQuestionType = {

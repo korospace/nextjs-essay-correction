@@ -112,8 +112,10 @@ export default function ExamQuestionForm({
     <div
       ref={dropdownRef}
       className={`w-full ${
-        showForm ? "px-6 py-6" : "h-0 px-0 py-0"
-      } transition-all overflow-hidden`}
+        showForm
+          ? "px-6 py-6 overflow-visible"
+          : "h-0 px-0 py-0 overflow-hidden"
+      } transition-all`}
     >
       <form
         onSubmit={handleSubmit}

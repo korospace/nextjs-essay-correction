@@ -86,6 +86,9 @@ export async function GetExam(
         course: true,
         exam_member: session.user.id_user_role === 3,
       },
+      orderBy: {
+        created_date: "desc",
+      },
       ...paginationParam,
     });
 
