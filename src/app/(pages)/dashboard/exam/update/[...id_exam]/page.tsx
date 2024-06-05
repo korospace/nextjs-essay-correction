@@ -8,8 +8,9 @@ import { Divider } from "@nextui-org/react";
 import { useRouter } from "next-nprogress-bar";
 import toast from "react-hot-toast";
 // components
-import ExamGeneralInfoForm from "@/lib/components/page/exam/ExamGeneralInfoForm";
+import ExamGeneralInfo from "@/lib/components/page/exam/form/ExamGeneralInfo";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
+import ExamQuestion from "@/lib/components/page/exam/form/ExamQuestion";
 import TabBarComponent from "@/lib/components/page/TabBarComponent";
 import PageComponent from "@/lib/components/page/PageComponent";
 // types
@@ -112,7 +113,7 @@ export default function ExamUpdatePage({ params }: Props) {
           <Divider className="bg-budiluhur-700 opacity-50" />
         </div>
 
-        <div className="mb-5 p-3 bg-budiluhur-500 rounded-md shadow">
+        <div className="mb-5 p-5 bg-budiluhur-500 rounded-md shadow">
           <TabBarComponent
             tabList={tabList}
             onSelect={(tabKey) => {
@@ -124,25 +125,25 @@ export default function ExamUpdatePage({ params }: Props) {
           <div
             className={`${
               selectedTabKey === "general_information" ? "" : "hidden"
-            } p-3`}
+            } p-4 bg-budiluhur-400 shadow rounded`}
           >
-            <ExamGeneralInfoForm dtGeneralInfo={examGeneralInfo} />
+            <ExamGeneralInfo dtGeneralInfo={examGeneralInfo} />
           </div>
 
           {/* Exam Question */}
           <div
             className={`${
               selectedTabKey === "exam_question" ? "" : "hidden"
-            } p-3`}
+            } p-4 bg-budiluhur-400 shadow rounded`}
           >
-            exam question
+            <ExamQuestion dtGeneralInfo={examGeneralInfo} />
           </div>
 
           {/* Exam Member */}
           <div
             className={`${
               selectedTabKey === "exam_member" ? "" : "hidden"
-            } p-3`}
+            } p-4 bg-budiluhur-400 shadow rounded`}
           >
             exam member
           </div>

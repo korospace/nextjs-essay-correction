@@ -12,8 +12,14 @@ import {
 } from "@/lib/validation/request";
 // types
 import { SessionType } from "@/lib/types/ResultTypes";
+import { ExamSearchParamType } from "@/lib/types/InputTypes";
 // services
-import { CreateExam, GetExam, UpdateExam } from "@/lib/services/mysql/exam";
+import {
+  CreateExam,
+  DeleteExam,
+  GetExam,
+  UpdateExam,
+} from "@/lib/services/mysql/exam";
 
 /**
  * Get Exam
@@ -25,9 +31,17 @@ export async function GET(request: NextRequest) {
 
   // url params
   const { searchParams } = new URL(request.url);
+  const examSearch: ExamSearchParamType = {
+    page: searchParams.get("page") ?? "",
+    limit: searchParams.get("limit") ?? "",
+    keyword: searchParams.get("keyword") ?? "",
+    id_course: searchParams.get("id_course") ?? "",
+    id_exam: searchParams.get("id_exam") ?? "",
+    status: searchParams.get("status") ?? "",
+  };
 
   // logic
-  const res = await GetExam(searchParams, session);
+  const res = await GetExam(examSearch, session);
 
   // response api
   const data = {
@@ -90,7 +104,26 @@ export async function PUT(request: NextRequest) {
   }
 
   // logic
-  const res = await UpdateExam(req, session.user.id_user);
+  const res = await UpdateExam(req, session);
+
+  // response api
+  return ResponseFormating.json(res.message, res.code, res.data);
+}
+
+/**
+ * Delete Exam
+ * -------------------------
+ */
+export async function DELETE(request: NextRequest) {
+  // session
+  const session = (await getServerSession(authOptions)) as SessionType;
+
+  // url params
+  const { searchParams } = new URL(request.url);
+  const id_exam = searchParams.get("id_exam");
+
+  // logic
+  const res = await DeleteExam(parseInt(id_exam ?? "0"), session);
 
   // response api
   return ResponseFormating.json(res.message, res.code, res.data);

@@ -10,7 +10,7 @@ import { CreateCourse } from "@/lib/services/mysql/course";
 // validation request
 import { CourseInputValidation } from "@/lib/validation/request";
 // types
-import { PaginationOptions } from "@/lib/types/InputTypes";
+import { PaginationOptionsType } from "@/lib/types/InputTypes";
 import { SessionType } from "@/lib/types/ResultTypes";
 
 /**

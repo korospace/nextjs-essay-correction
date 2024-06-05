@@ -5,7 +5,7 @@ import { useState } from "react";
 // nextjs
 import { Divider } from "@nextui-org/react";
 // components
-import ExamGeneralInfoForm from "@/lib/components/page/exam/ExamGeneralInfoForm";
+import ExamGeneralInfo from "@/lib/components/page/exam/form/ExamGeneralInfo";
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
 import TabBarComponent from "@/lib/components/page/TabBarComponent";
 import PageComponent from "@/lib/components/page/PageComponent";
@@ -67,7 +67,7 @@ export default function ExamCreatePage() {
           <Divider className="bg-budiluhur-700 opacity-50" />
         </div>
 
-        <div className="mb-5 p-3 bg-budiluhur-500 rounded-md shadow">
+        <div className="mb-5 p-5 bg-budiluhur-500 rounded-md shadow">
           <TabBarComponent
             tabList={tabList}
             onSelect={(tabKey) => {
@@ -79,9 +79,9 @@ export default function ExamCreatePage() {
           <div
             className={`${
               selectedTabKey === "general_information" ? "" : "hidden"
-            } p-3`}
+            } p-4 bg-budiluhur-400 shadow rounded`}
           >
-            <ExamGeneralInfoForm />
+            <ExamGeneralInfo />
           </div>
         </div>
       </main>

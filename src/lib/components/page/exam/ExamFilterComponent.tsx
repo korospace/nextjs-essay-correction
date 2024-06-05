@@ -60,15 +60,14 @@ export default function ExamFilterComponent({
           courseOnChange(opt);
         }}
       />
-      {showStatusOpt ||
-        (showStatusOpt === undefined && (
-          <SelectOptionComponent
-            dtOption={statusOpt}
-            onChange={(opt) => {
-              statusOnChange(opt);
-            }}
-          />
-        ))}
+      {(showStatusOpt || showStatusOpt === undefined) && (
+        <SelectOptionComponent
+          dtOption={statusOpt}
+          onChange={(opt) => {
+            statusOnChange(opt);
+          }}
+        />
+      )}
     </div>
   );
 }

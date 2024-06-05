@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import { HashText } from "@/lib/helpers/helpers";
 // types
 import {
-  PaginationOptions,
+  PaginationOptionsType,
   UserInputType,
   UserSearchType,
 } from "@/lib/types/InputTypes";
@@ -18,7 +18,7 @@ import { ApiResponseType } from "@/lib/types/ResultTypes";
  */
 export async function GetUser(
   searchParam: UserSearchType,
-  paginationOptions?: PaginationOptions
+  PaginationOptionsType?: PaginationOptionsType
 ): Promise<ApiResponseType> {
   try {
     const listUser = await prisma.user.findMany({
@@ -26,7 +26,7 @@ export async function GetUser(
         ...searchParam,
         deleted_by: 0,
       },
-      ...paginationOptions,
+      ...PaginationOptionsType,
     });
 
     const countRow = await prisma.user.count({
@@ -36,7 +36,8 @@ export async function GetUser(
       },
     });
 
-    const limit = paginationOptions != undefined ? paginationOptions.take : 0;
+    const limit =
+      PaginationOptionsType != undefined ? PaginationOptionsType.take : 0;
     const countPage = Math.ceil(countRow / limit);
 
     return {

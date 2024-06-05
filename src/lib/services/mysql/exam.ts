@@ -6,8 +6,9 @@ import { prisma } from "@/lib/db/prisma";
 import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
 import {
   ExamInputType,
+  ExamSearchParamType,
   ExamWhereType,
-  PaginationOptions,
+  PaginationOptionsType,
 } from "@/lib/types/InputTypes";
 
 /**
@@ -15,24 +16,24 @@ import {
  * -------------------------------
  */
 export async function GetExam(
-  searchParams: any,
+  searchParams: ExamSearchParamType,
   session: SessionType
 ): Promise<ApiResponseType> {
   try {
     // -- params value --
-    const id_exam = searchParams.get("id_exam");
-    const id_course = searchParams.get("id_course");
-    const status = searchParams.get("status");
-    const page = searchParams.get("page");
-    const limit = searchParams.get("limit");
-    const keyword = searchParams.get("keyword");
+    const id_exam = searchParams.id_exam;
+    const id_course = searchParams.id_course;
+    const status = searchParams.status;
+    const page = searchParams.page;
+    const limit = searchParams.limit;
+    const keyword = searchParams.keyword;
 
     // -- where clause --
     const whereClause: ExamWhereType = {
       OR: [
         {
           title: {
-            contains: keyword ?? "",
+            contains: keyword,
           },
         },
       ],
@@ -54,11 +55,12 @@ export async function GetExam(
           id_user: session.user.id_user,
         },
       };
+
+      if (status) {
+        whereClause.exam_member.some.status = status.toUpperCase();
+      }
     }
     // OR
-    if (whereClause.OR && status) {
-      whereClause.OR[0].status = status;
-    }
     if (whereClause.OR && id_course) {
       whereClause.OR[0].id_course = !isNaN(parseInt(id_course ?? "0"))
         ? parseInt(id_course)
@@ -66,8 +68,8 @@ export async function GetExam(
     }
 
     // -- pagination --
-    let paginationParam: PaginationOptions | undefined;
-    if (page !== null && limit !== null) {
+    let paginationParam: PaginationOptionsType | undefined;
+    if (page && limit) {
       paginationParam = {
         skip: (parseInt(page) - 1) * parseInt(limit),
         take: parseInt(limit),
@@ -99,7 +101,7 @@ export async function GetExam(
       status: true,
       code: 200,
       message: "exam list",
-      totalPage: Math.ceil(countRow / limit),
+      totalPage: limit ? Math.ceil(countRow / parseInt(limit)) : 0,
       totalRow: countRow,
       data: listExam,
     };
@@ -171,7 +173,7 @@ export async function CreateExam(
  */
 export async function UpdateExam(
   dataInput: ExamInputType,
-  userSessionId: number
+  session: SessionType
 ): Promise<ApiResponseType> {
   try {
     // check course exist
@@ -204,7 +206,9 @@ export async function UpdateExam(
             start_date: new Date(dataInput.start_date),
             end_date: new Date(dataInput.end_date),
             duration: dataInput.duration,
-            created_by: userSessionId !== 1 ? userSessionId : 0,
+            updated_by:
+              session.user.id_user_role !== 1 ? session.user.id_user : 0,
+            updated_date: new Date(),
           },
           where: {
             id_exam: dataInput.id_exam,
@@ -222,5 +226,50 @@ export async function UpdateExam(
     }
   } catch (error: any) {
     return { status: false, code: 500, message: error.message };
+  }
+}
+
+/**
+ * Delete Exam
+ * -------------------------------
+ */
+export async function DeleteExam(
+  id_exam: number,
+  session: SessionType
+): Promise<ApiResponseType> {
+  try {
+    // check exam is exist
+    const checkExist = await prisma.exam.findFirst({
+      where: {
+        id_exam: id_exam,
+      },
+    });
+
+    if (checkExist === null) {
+      return {
+        status: false,
+        code: 404,
+        message: "exam is not exist",
+      };
+    } else {
+      const exam = await prisma.exam.update({
+        data: {
+          deleted_by: session.user.id_user,
+          deleted_date: new Date(),
+        },
+        where: {
+          id_exam: id_exam,
+        },
+      });
+
+      revalidateTag("exam");
+      return {
+        status: true,
+        code: 200,
+        message: "exam delete successfully",
+      };
+    }
+  } catch (error: any) {
+    return { status: true, code: 500, message: error.message };
   }
 }

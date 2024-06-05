@@ -3,6 +3,10 @@ import { z } from "zod";
 // helpers
 import { DateFormating } from "@/lib/helpers/helpers";
 
+/**
+ * User
+ * ------------------------------------------
+ */
 export const UserInputValidation = z.object({
   username: z
     .string()
@@ -35,6 +39,10 @@ export const UserUpdateValidation = z.object({
     .max(255, "Full name cannot be more than 255 characters"),
 });
 
+/**
+ * Qourse
+ * ------------------------------------------
+ */
 export const CourseInputValidation = z.object({
   name: z.string().max(255, "Name cannot be more than 255 characters"),
   description: z
@@ -50,6 +58,10 @@ export const CourseUpdateValidation = z.object({
     .max(255, "Description cannot be more than 255 characters"),
 });
 
+/**
+ * Exam
+ * ------------------------------------------
+ */
 export const ExamInputValidation = z.object({
   id_course: z.number(),
   title: z.string().max(255, "Title cannot be more than 255 characters"),
@@ -83,4 +95,29 @@ export const ExamUpdateValidation = z.object({
   duration: z
     .number()
     .max(99999999999, "Duration cannot be more than 11 digit"),
+});
+
+/**
+ * Exam Question
+ * ------------------------------------------
+ */
+export const ExamQuestionInputValidation = z.object({
+  id_exam: z.number(),
+  question: z
+    .string()
+    .max(1000, "Question cannot be more than 1000 characters"),
+  answer_key: z
+    .string()
+    .max(1000, "Answer key cannot be more than 1000 characters"),
+});
+
+export const ExamQuestionUpdateValidation = z.object({
+  id_exam_question: z.number(),
+  id_exam: z.number(),
+  question: z
+    .string()
+    .max(1000, "Question cannot be more than 1000 characters"),
+  answer_key: z
+    .string()
+    .max(1000, "Answer key cannot be more than 1000 characters"),
 });

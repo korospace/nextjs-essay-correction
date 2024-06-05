@@ -18,7 +18,7 @@ import {
   UserUpdateValidation,
 } from "@/lib/validation/request";
 // types
-import { PaginationOptions, UserSearchType } from "@/lib/types/InputTypes";
+import { PaginationOptionsType, UserSearchType } from "@/lib/types/InputTypes";
 import { SessionType } from "@/lib/types/ResultTypes";
 
 /**
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   };
 
   // pagination param
-  let paginationParam: PaginationOptions | undefined;
+  let paginationParam: PaginationOptionsType | undefined;
   if (page !== null && limit !== null) {
     paginationParam = {
       skip: (parseInt(page) - 1) * parseInt(limit),

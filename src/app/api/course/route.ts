@@ -8,7 +8,10 @@ import { ResponseFormating } from "@/lib/helpers/helpers";
 // services
 import { GetCourse } from "@/lib/services/mysql/course";
 // types
-import { CourseSearchType, PaginationOptions } from "@/lib/types/InputTypes";
+import {
+  CourseSearchType,
+  PaginationOptionsType,
+} from "@/lib/types/InputTypes";
 import { SessionType } from "@/lib/types/ResultTypes";
 
 /**
@@ -37,7 +40,7 @@ export async function GET(request: NextRequest) {
   };
 
   // pagination param
-  let paginationParam: PaginationOptions | undefined;
+  let paginationParam: PaginationOptionsType | undefined;
   if (page !== null && limit !== null) {
     paginationParam = {
       skip: (parseInt(page) - 1) * parseInt(limit),

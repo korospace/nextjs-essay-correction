@@ -83,6 +83,7 @@ model Exam {
   deleted_date  DateTime?
   course        Course @relation(fields: [id_course], references: [id_course])
   exam_member   ExamMember[]
+  exam_question ExamQuestion[]
 
   @@map("exam")
 }
@@ -106,20 +107,21 @@ model ExamMember {
   @@map("exam_member")
 }
 
-// model ExamQuestion {
-//   id_exam_question  Int         @id @default(autoincrement())
-//   id_exam           Int
-//   question          String      @db.Text
-//   answer_key        String      @db.MediumText
-//   created_by        Int         @default(0)
-//   created_date      DateTime    @default(now())
-//   updated_by        Int         @default(0)
-//   updated_date      DateTime?
-//   deleted_by        Int         @default(0)
-//   deleted_date      DateTime?
+model ExamQuestion {
+  id_exam_question  Int         @id @default(autoincrement())
+  id_exam           Int
+  question          String      @db.Text
+  answer_key        String      @db.MediumText
+  created_by        Int         @default(0)
+  created_date      DateTime    @default(now())
+  updated_by        Int         @default(0)
+  updated_date      DateTime?
+  deleted_by        Int         @default(0)
+  deleted_date      DateTime?
+  exam              Exam @relation(fields: [id_exam], references: [id_exam])
 
-//   @@map("exam_question")
-// }
+  @@map("exam_question")
+}
 
 // model ExamAnswer {
 //   id_exam_answer    BigInt      @id @default(autoincrement())

@@ -5,8 +5,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next-nprogress-bar";
 import { Icon } from "@iconify/react/dist/iconify.js";
 // components
-import { Divider } from "@nextui-org/react";
-import SelectOptionComponent from "../SelectOptionComponent";
+import SelectOptionComponent from "../../SelectOptionComponent";
 // types
 import { ExamType } from "@/lib/types/ResultTypes";
 import { InvalidFieldType, SelectOptionType } from "@/lib/types/ComponentTypes";
@@ -26,7 +25,7 @@ type Props = {
   dtGeneralInfo?: ExamType;
 };
 
-export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
+export default function ExamGeneralInfo({ dtGeneralInfo }: Props) {
   // -- Router --
   const router = useRouter();
 
@@ -191,7 +190,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
     <form onSubmit={handleSubmit} autoComplete="off">
       {/* Course */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           Course
         </label>
         <SelectOptionComponent
@@ -207,7 +206,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
 
       {/* Title */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           Title
         </label>
         <input
@@ -229,7 +228,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
 
       {/* Description */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           Description
         </label>
         <textarea
@@ -255,7 +254,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
 
       {/* Start Date */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           Start Date
         </label>
         <div className="w-full max-w-lg flex gap-2">
@@ -307,7 +306,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
 
       {/* End Date */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           End Date
         </label>
         <div className="w-full max-w-lg flex gap-2">
@@ -359,7 +358,7 @@ export default function ExamGeneralInfoForm({ dtGeneralInfo }: Props) {
 
       {/* Duration */}
       <div className="mb-5">
-        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
+        <label className="block mb-2 text-sm font-medium text-budiluhur-700/80 leading-none">
           Duration{" "}
           <small>
             <i>(in minute)</i>

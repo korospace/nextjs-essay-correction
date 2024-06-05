@@ -49,7 +49,8 @@ export type ExamType = {
   end_date: string;
   duration: number;
   course: CourseType;
-  exam_member: ExamMemberType[];
+  exam_member?: ExamMemberType[];
+  exam_question?: ExamQuestionType[];
 };
 
 export type ExamMemberType = {
@@ -62,7 +63,7 @@ export type ExamMemberType = {
 };
 
 export type ExamQuestionType = {
-  id_exam_question: number;
+  id_exam_question?: number;
   id_exam: number;
   question: string;
   answer_key: string;

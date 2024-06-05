@@ -144,3 +144,38 @@ export const HttpSaveExam = async (
     };
   }
 };
+
+/**
+ * Delete Exam
+ * --------------------------
+ */
+export const HttpDeleteExam = async (
+  id_exam: number,
+  apiPath: string
+): Promise<ApiResponseType> => {
+  try {
+    const res = await fetch(baseUrl + apiPath + `?id_exam=${id_exam}`, {
+      method: "DELETE",
+    });
+
+    const resJson = await res.json();
+
+    if (res.ok) {
+      return {
+        status: true,
+        message: "Exam deleted successfully",
+        data: resJson.data,
+      };
+    } else {
+      return {
+        status: false,
+        message: resJson.message,
+      };
+    }
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.message,
+    };
+  }
+};

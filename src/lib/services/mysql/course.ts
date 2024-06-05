@@ -6,7 +6,7 @@ import { prisma } from "@/lib/db/prisma";
 import {
   CourseInputType,
   CourseSearchType,
-  PaginationOptions,
+  PaginationOptionsType,
 } from "@/lib/types/InputTypes";
 import { ApiResponseType } from "@/lib/types/ResultTypes";
 
@@ -16,7 +16,7 @@ import { ApiResponseType } from "@/lib/types/ResultTypes";
  */
 export async function GetCourse(
   searchParam: CourseSearchType,
-  paginationOptions?: PaginationOptions
+  PaginationOptionsType?: PaginationOptionsType
 ): Promise<ApiResponseType> {
   try {
     const listUser = await prisma.course.findMany({
@@ -24,7 +24,7 @@ export async function GetCourse(
         ...searchParam,
         deleted_by: 0,
       },
-      ...paginationOptions,
+      ...PaginationOptionsType,
     });
 
     const countRow = await prisma.course.count({
@@ -34,7 +34,8 @@ export async function GetCourse(
       },
     });
 
-    const limit = paginationOptions != undefined ? paginationOptions.take : 0;
+    const limit =
+      PaginationOptionsType != undefined ? PaginationOptionsType.take : 0;
     const countPage = Math.ceil(countRow / limit);
 
     return {

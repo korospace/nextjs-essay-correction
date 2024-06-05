@@ -32,7 +32,7 @@ export default function TabBarComponent({ tabList, onSelect }: Props) {
   };
 
   return (
-    <div className="mb-4 border-b border-budiluhur-700/50">
+    <div className="mb-4">
       <ul className="flex text-sm">
         {tabList.map((row, index) => {
           return (
@@ -40,13 +40,13 @@ export default function TabBarComponent({ tabList, onSelect }: Props) {
               <button
                 type="button"
                 onClick={() => handleSelect(row.key, row.disable)}
-                className={`inline-block px-4 py-2.5 rounded-t-md transition-all border-b-3 ${
+                className={`inline-block px-4 py-2.5 rounded-t-md transition-all border border-b-3 ${
                   row.disable
                     ? "cursor-default"
-                    : "hover:bg-budiluhur-400 hover:text-budiluhur-800 hover:border-budiluhur-800"
+                    : "hover:bg-budiluhur-300 hover:text-budiluhur-800 hover:border-budiluhur-800"
                 } ${
                   row.key === selectedTabKey
-                    ? "border-budiluhur-700 text-budiluhur-700 bg-budiluhur-300"
+                    ? "border-budiluhur-700 text-budiluhur-700 bg-budiluhur-400"
                     : " border-budiluhur-700/80 text-budiluhur-700/80"
                 }`}
               >

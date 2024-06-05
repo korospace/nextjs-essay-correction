@@ -1,13 +1,31 @@
-export type PaginationOptions = {
+/**
+ * General
+ * --------------------------
+ */
+export type SearchParamsType = {
+  page: string;
+  limit: string;
+  keyword: string;
+};
+
+export type PaginationOptionsType = {
   skip: number;
   take: number;
 };
 
+/**
+ * Login
+ * --------------------------
+ */
 export type LoginInputType = {
   username: string;
   password: string;
 };
 
+/**
+ * User
+ * --------------------------
+ */
 export type UserInputType = {
   id_user?: number;
   username: string;
@@ -25,6 +43,10 @@ export type UserSearchType = {
   }[];
 };
 
+/**
+ * Course
+ * --------------------------
+ */
 export type CourseInputType = {
   id_course?: number;
   name: string;
@@ -38,6 +60,10 @@ export type CourseSearchType = {
   }[];
 };
 
+/**
+ * Exam
+ * --------------------------
+ */
 export type ExamInputType = {
   id_exam?: number;
   id_course: number;
@@ -48,6 +74,12 @@ export type ExamInputType = {
   duration: number;
 };
 
+export type ExamSearchParamType = SearchParamsType & {
+  id_exam: string;
+  id_course: string;
+  status: string;
+};
+
 export type ExamWhereType = {
   id_exam?: any;
   created_by?: any;
@@ -56,5 +88,27 @@ export type ExamWhereType = {
     id_course?: any;
     status?: any;
     title?: any;
+  }[];
+};
+
+/**
+ * Exam Question
+ * --------------------------
+ */
+export type ExamQuestionInputType = {
+  id_exam_question?: number;
+  id_exam: number;
+  question: string;
+  answer_key: string;
+};
+
+export type ExamQuestionSearchParamType = SearchParamsType & {
+  id_exam: string;
+};
+
+export type ExamQuestionWhereType = {
+  id_exam?: any;
+  OR?: {
+    question?: any;
   }[];
 };

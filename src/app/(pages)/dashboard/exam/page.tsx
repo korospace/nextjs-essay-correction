@@ -15,12 +15,16 @@ import ExamFilterComponent from "@/lib/components/page/exam/ExamFilterComponent"
 import BreadcrumbComponent from "@/lib/components/page/BreadcrumbsComponent";
 import PaginationComponent from "@/lib/components/page/PaginationComponent";
 import SearchbarComponent from "@/lib/components/page/SearchbarComponent";
+import DialogComponent from "@/lib/components/page/DialogComponent";
 import PageComponent from "@/lib/components/page/PageComponent";
 // types
 import { BreadcrumbItemType } from "@/lib/types/ComponentTypes";
 import { ExamType, SessionType } from "@/lib/types/ResultTypes";
 // services
-import { HttpGetExam } from "@/lib/services/functions/frontend/examFunc";
+import {
+  HttpGetExam,
+  HttpDeleteExam,
+} from "@/lib/services/functions/frontend/examFunc";
 
 export default function ExamPage() {
   // router
@@ -55,6 +59,11 @@ export default function ExamPage() {
   const [dataSession, setDataSession] = useState<SessionType>();
   const [examList, setExamList] = useState<ExamType[]>([]);
   const [examListLoading, setExamListLoading] = useState<boolean>(false);
+  const [selectedExam, setSelectedExam] = useState<ExamType>();
+  const [showDialogDelete, setShowDialogDelete] = useState<boolean>(false);
+  const [dialogDeleteLoading, setDialogDeleteLoading] =
+    useState<boolean>(false);
+  const [dialogDeleteMessage, setDialogDeleteMessage] = useState<string>("");
 
   // -- Use Effect --
   useEffect(() => {
@@ -81,6 +90,26 @@ export default function ExamPage() {
       setExamList(res.data.data);
       setTotalRow(res.data.totalRow);
       setTotalPage(res.data.totalPage);
+    }
+  };
+
+  const handleShowDialogDetele = (dtExam: ExamType) => {
+    setSelectedExam(dtExam);
+    setShowDialogDelete(true);
+    setDialogDeleteMessage(`Are you sure to delete exam?`);
+  };
+
+  const handleDeleteExam = async () => {
+    setDialogDeleteLoading(true);
+    const res = await HttpDeleteExam(selectedExam?.id_exam || 0, "api/exam");
+    setDialogDeleteLoading(false);
+
+    if (res.status == false) {
+      toast.error(res.message);
+    } else {
+      toast.success(res.message);
+      setShowDialogDelete(false);
+      handleFetchExam();
     }
   };
 
@@ -173,7 +202,7 @@ export default function ExamPage() {
                         key={index}
                         dtExam={row}
                         no={index + 1 + (page - 1) * limit}
-                        onDelete={(dtExam) => {}}
+                        onDelete={(dtExam) => handleShowDialogDetele(dtExam)}
                       />
                     ))
                   )}
@@ -193,6 +222,16 @@ export default function ExamPage() {
             next={() => setPage(page + 1)}
           />
         </div>
+
+        {/* Dialog - Delete */}
+        <DialogComponent
+          title="Delete Exam"
+          showModal={showDialogDelete}
+          message={dialogDeleteMessage}
+          isLoading={dialogDeleteLoading}
+          onSubmit={() => handleDeleteExam()}
+          onCancle={() => setShowDialogDelete(false)}
+        />
       </main>
     </PageComponent>
   );
