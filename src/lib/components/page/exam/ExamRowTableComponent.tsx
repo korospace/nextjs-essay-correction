@@ -2,6 +2,7 @@
 import { Fragment, useEffect, useState } from "react";
 // nextjs
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 // external lib
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next-nprogress-bar";
@@ -38,6 +39,11 @@ export default function ExamRowTableComponent({ dtExam, no, onDelete }: Props) {
   }, [session]);
 
   // -- function --
+  const examIdUserMember = (): number | undefined => {
+    if (dtExam && dtExam.exam_member && dtExam.exam_member.length > 0) {
+      return dtExam.exam_member[0].id_user ?? undefined;
+    }
+  };
   const handleExtractDate = (date: string) => {
     return DateFormating.changeDateFormat(
       DateFormating.extractDateTime(date).date
@@ -56,7 +62,12 @@ export default function ExamRowTableComponent({ dtExam, no, onDelete }: Props) {
         <td className="px-6 py-4 align-top">{dtExam.description}</td>
         {dataSession?.user.id_user_role === 3 && (
           <td className="px-6 py-4 align-top">
-            <ExamStatusComponent dtExam={dtExam} />
+            <ExamStatusComponent
+              examGeneralInfo={dtExam}
+              examMember={
+                dtExam.exam_member ? dtExam.exam_member[0] : undefined
+              }
+            />
           </td>
         )}
         <td className="px-6 py-4 align-top">
@@ -90,14 +101,13 @@ export default function ExamRowTableComponent({ dtExam, no, onDelete }: Props) {
         </td>
         <td className="px-6 py-4 flex gap-2 justify-end">
           {dataSession?.user.id_user_role === 3 ? (
-            <button
-              onClick={() =>
-                router.push("/dashboard/exam/show/" + dtExam.id_exam)
-              }
+            <Link
+              target="_blank"
+              href={"/exam/" + dtExam.id_exam + "/" + examIdUserMember()}
               className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
             >
               <Icon icon="mdi:eye" />
-            </button>
+            </Link>
           ) : (
             <>
               <button

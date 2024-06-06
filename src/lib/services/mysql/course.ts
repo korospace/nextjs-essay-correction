@@ -60,10 +60,11 @@ export async function CreateCourse(
   userSessionId: number
 ): Promise<ApiResponseType> {
   try {
-    // check username exist
+    // check course exist
     const dtCourse = await prisma.course.findFirst({
       where: {
         name: dataInput.name,
+        deleted_by: 0,
       },
     });
 
@@ -76,6 +77,7 @@ export async function CreateCourse(
           name: dataInput.name,
           description: dataInput.description,
           created_by: userSessionId,
+          deleted_by: 0,
         },
       });
 
@@ -104,6 +106,7 @@ export async function UpdateCourse(
     const checkCourserExist = await prisma.course.findFirst({
       where: {
         id_course: dataInput.id_course,
+        deleted_by: 0,
       },
     });
 
@@ -116,6 +119,7 @@ export async function UpdateCourse(
       where: {
         name: dataInput.name,
         id_course: { not: dataInput.id_course },
+        deleted_by: 0,
       },
     });
 
@@ -167,6 +171,7 @@ export async function DeleteCourse(
     const checkCourserExist = await prisma.course.findFirst({
       where: {
         id_course: id_course,
+        deleted_by: 0,
       },
     });
 

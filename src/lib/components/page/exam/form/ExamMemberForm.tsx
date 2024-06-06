@@ -63,7 +63,11 @@ export default function ExamMemberForm({
 
     // HTTP
     setLoadingForm(true);
-    const res = await HttpSaveExamMember(apiPath, httpMethod, httpPayload);
+    const res = await HttpSaveExamMember(
+      apiPath + "/create",
+      httpMethod,
+      httpPayload
+    );
     setLoadingForm(false);
 
     // response

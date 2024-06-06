@@ -61,7 +61,7 @@ export default function ExamUpdatePage({ params }: Props) {
       href: "/dashboard/exam/update/" + params.id_exam,
     },
     {
-      title: examGeneralInfo?.title ?? "",
+      title: examGeneralInfo?.title ?? "_ _ _ _",
       icon: "fe:arrow-right",
       href: "",
     },
@@ -72,18 +72,21 @@ export default function ExamUpdatePage({ params }: Props) {
     {
       key: "general_information",
       title: "General Information",
+      icon: "entypo:info",
       selected: false,
       disable: false,
     },
     {
       key: "exam_question",
       title: "Exam Question",
+      icon: "bi:question-circle",
       selected: true,
       disable: false,
     },
     {
       key: "exam_member",
       title: "Exam Member",
+      icon: "tdesign:member",
       selected: false,
       disable: false,
     },
@@ -123,31 +126,28 @@ export default function ExamUpdatePage({ params }: Props) {
           />
 
           {/* General Information */}
-          <div
-            className={`${
-              selectedTabKey === "general_information" ? "" : "hidden"
-            } p-4 bg-budiluhur-400 shadow rounded`}
-          >
-            <ExamGeneralInfo dtGeneralInfo={examGeneralInfo} />
-          </div>
+          {selectedTabKey === "general_information" && (
+            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+              <ExamGeneralInfo
+                dtGeneralInfo={examGeneralInfo}
+                afterSubmit={() => fetchExamGeneralInfo()}
+              />
+            </div>
+          )}
 
           {/* Exam Question */}
-          <div
-            className={`${
-              selectedTabKey === "exam_question" ? "" : "hidden"
-            } p-4 bg-budiluhur-400 shadow rounded`}
-          >
-            <ExamQuestion dtGeneralInfo={examGeneralInfo} />
-          </div>
+          {selectedTabKey === "exam_question" && (
+            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+              <ExamQuestion dtGeneralInfo={examGeneralInfo} />
+            </div>
+          )}
 
           {/* Exam Member */}
-          <div
-            className={`${
-              selectedTabKey === "exam_member" ? "" : "hidden"
-            } p-4 bg-budiluhur-400 shadow rounded`}
-          >
-            <ExamMember dtGeneralInfo={examGeneralInfo} />
-          </div>
+          {selectedTabKey === "exam_member" && (
+            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+              <ExamMember dtGeneralInfo={examGeneralInfo} />
+            </div>
+          )}
         </div>
       </main>
     </PageComponent>

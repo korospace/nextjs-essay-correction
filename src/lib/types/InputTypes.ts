@@ -1,3 +1,5 @@
+import { ExamStatus } from "@prisma/client";
+
 /**
  * General
  * --------------------------
@@ -124,9 +126,15 @@ export type ExamMemberInputType = {
 
 export type ExamMemberSearchParamType = SearchParamsType & {
   id_exam: string;
+  id_user: string;
 };
 
 export type ExamMemberWhereType = {
   id_exam?: any;
   user?: any;
+};
+
+export type ExamMemberStatuUpdateType = {
+  id_exam_member: number;
+  status: ExamStatus;
 };

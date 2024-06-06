@@ -126,6 +126,7 @@ export async function CreateExam(
     const dtCourseExist = await prisma.course.findFirst({
       where: {
         id_course: dataInput.id_course,
+        deleted_by: 0,
       },
     });
 
@@ -137,6 +138,7 @@ export async function CreateExam(
         where: {
           title: dataInput.title,
           id_course: dataInput.id_course,
+          deleted_by: 0,
         },
       });
 
@@ -183,6 +185,7 @@ export async function UpdateExam(
     const dtCourseExist = await prisma.course.findFirst({
       where: {
         id_course: dataInput.id_course,
+        deleted_by: 0,
       },
     });
 
@@ -195,6 +198,7 @@ export async function UpdateExam(
           title: dataInput.title,
           id_course: dataInput.id_course,
           id_exam: { not: dataInput.id_exam },
+          deleted_by: 0,
         },
       });
 
@@ -245,6 +249,7 @@ export async function DeleteExam(
     const checkExist = await prisma.exam.findFirst({
       where: {
         id_exam: id_exam,
+        deleted_by: 0,
       },
     });
 

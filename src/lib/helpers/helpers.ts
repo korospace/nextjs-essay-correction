@@ -5,6 +5,8 @@ import CryptoJS from "crypto-js";
 // types
 import { ZodError } from "zod";
 
+export const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
+
 export const ResponseFormating = {
   json: (message: string, httpCode: number = 200, data: any = false) => {
     let payload: any = {
@@ -78,14 +80,14 @@ export const HashText = {
     ).toString();
     return hash;
   },
-  decrypt: (hashText: string): string | null => {
+  decrypt: (hashText: string): string => {
     try {
       const bytes = CryptoJS.AES.decrypt(hashText, process.env.APP_KEY ?? "");
       const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
-      return decryptedText ? decryptedText : null;
+      return decryptedText ? decryptedText : "";
     } catch (error) {
       console.error("Decryption error:", error);
-      return null;
+      return "";
     }
   },
   compare: (plainText: string, hashText: string): boolean => {
@@ -102,8 +104,15 @@ export const HashText = {
 
 export const pathCheck = (path: string, pathList: string[]): boolean => {
   return pathList.some((p) => {
-    const regex = new RegExp(`^${p}(\/\\d+)?$`);
+    const regex = new RegExp(`^${p}(\/.*)?$`);
 
     return regex.test(path);
   });
+};
+
+export const getPathName = (): string => {
+  const fullPath = window.location.pathname;
+  const pathname = fullPath.replace(baseUrl, "");
+
+  return pathname;
 };

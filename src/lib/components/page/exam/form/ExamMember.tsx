@@ -11,10 +11,12 @@ import ExamMemberForm from "./ExamMemberForm";
 import ExamMemberRow from "./ExamMemberRow";
 // types
 import { ExamMemberType, ExamType } from "@/lib/types/ResultTypes";
+import { ExamMemberStatuUpdateType } from "@/lib/types/InputTypes";
 // services
 import {
   HttpDeleteExamMember,
   HttpGetExamMember,
+  HttpUpdateExamMemberStatus,
 } from "@/lib/services/functions/frontend/examMemberFunc";
 
 /**
@@ -65,17 +67,36 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
     }
   };
 
-  const handleShowDialogDetele = (dtMember: ExamMemberType) => {
-    setSelectedMember(dtMember);
-    setShowDialogDelete(true);
-    setDialogDeleteMessage(`Are you sure to delete member?`);
+  const handleReOpen = async (dtMember: ExamMemberType) => {
+    // build payload
+    const httpMethod: string = "PUT";
+    const httpPayload: ExamMemberStatuUpdateType = {
+      id_exam_member: dtMember.id_exam_member,
+      status: "ON_GOING",
+    };
+
+    // HTTP
+    setMemberListLoading(true);
+    const res = await HttpUpdateExamMemberStatus(
+      "api/exam/member/status",
+      httpMethod,
+      httpPayload
+    );
+
+    // response
+    if (res.status == true) {
+      handleFetchMember();
+    } else {
+      setMemberListLoading(false);
+      toast.error(res.message);
+    }
   };
 
   const handleDeleteMember = async () => {
     setDialogDeleteLoading(true);
     const res = await HttpDeleteExamMember(
       selectedMember?.id_exam_member || 0,
-      "api/exam/member"
+      "api/exam/member/delete"
     );
     setDialogDeleteLoading(false);
 
@@ -86,6 +107,12 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
       setShowDialogDelete(false);
       handleFetchMember();
     }
+  };
+
+  const handleShowDialogDetele = (dtMember: ExamMemberType) => {
+    setSelectedMember(dtMember);
+    setShowDialogDelete(true);
+    setDialogDeleteMessage(`Are you sure to delete member?`);
   };
 
   return (
@@ -113,6 +140,9 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
               <th scope="col" className="px-6 py-3">
                 Full Name
               </th>
+              <th scope="col" className="px-6 py-3">
+                Status
+              </th>
               <th scope="col" className="px-6 py-3 text-right">
                 Action
               </th>
@@ -123,7 +153,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
           <tbody>
             {/* Form Add New */}
             <tr className="border-b border-budiluhur-700 bg-budiluhur-300">
-              <td colSpan={4}>
+              <td colSpan={5}>
                 <ExamMemberForm
                   apiPath="api/exam/member"
                   dtGeneralInfo={dtGeneralInfo}
@@ -137,7 +167,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
             {memberListLoading ? (
               // Loading
               <tr className={`border-b border-budiluhur-700 bg-budiluhur-300`}>
-                <td colSpan={4} className="px-6 py-4">
+                <td colSpan={5} className="px-6 py-4">
                   <div className="flex justify-center">
                     <Icon icon="eos-icons:loading" className={`text-2xl`} />
                   </div>
@@ -149,7 +179,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
                   <tr
                     className={`border-b border-budiluhur-700 bg-budiluhur-300`}
                   >
-                    <td colSpan={4} className="px-6 py-4">
+                    <td colSpan={5} className="px-6 py-4">
                       <div className="flex justify-center">data not found</div>
                     </td>
                   </tr>
@@ -162,9 +192,10 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
                       dtGeneralInfo={dtGeneralInfo}
                       dtMember={row}
                       no={index + 1 + (page - 1) * limit}
-                      onDelete={(dtQuestion) =>
-                        handleShowDialogDetele(dtQuestion)
-                      }
+                      onDelete={(dtMember) => handleShowDialogDetele(dtMember)}
+                      reOpen={(dtMember) => {
+                        handleReOpen(dtMember);
+                      }}
                     />
                   ))
                 )}

@@ -32,7 +32,7 @@ export default function SidebarComponent({ showSidebar }: Props) {
   useEffect(() => {
     const list = GetSidebarList();
     setSidebarList(list);
-  }, []);
+  }, [session]);
   useEffect(() => {
     setDataSession(session);
   }, [session]);

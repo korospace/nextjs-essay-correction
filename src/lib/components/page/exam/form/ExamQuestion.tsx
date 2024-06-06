@@ -76,7 +76,7 @@ export default function ExamQuestion({ dtGeneralInfo }: Props) {
     setDialogDeleteLoading(true);
     const res = await HttpDeleteExamQuestion(
       selectedQuestion?.id_exam_question || 0,
-      "api/exam/question"
+      "api/exam/question/delete"
     );
     setDialogDeleteLoading(false);
 

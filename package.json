@@ -30,6 +30,7 @@
     "next-nprogress-bar": "^2.3.12",
     "postcss": "8.4.38",
     "react": "18.3.1",
+    "react-countdown": "^2.3.5",
     "react-dom": "18.3.1",
     "react-hot-toast": "^2.4.1",
     "sastrawijs": "^1.1.0",

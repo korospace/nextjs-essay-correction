@@ -1,3 +1,4 @@
+import { ExamStatus } from "@prisma/client";
 // nextjs
 import { NextMiddleware } from "next/server";
 
@@ -59,7 +60,7 @@ export type ExamMemberType = {
   id_user: number;
   start_date?: string;
   end_date?: string;
-  status?: string;
+  status?: ExamStatus;
   user: UserType;
 };
 

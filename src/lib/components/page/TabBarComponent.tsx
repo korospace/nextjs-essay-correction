@@ -1,6 +1,8 @@
 // react
 import { useEffect, useState } from "react";
-// component
+// external lib
+import { Icon } from "@iconify/react/dist/iconify.js";
+// types
 import { TabBarItemType } from "@/lib/types/ComponentTypes";
 
 /**
@@ -40,7 +42,7 @@ export default function TabBarComponent({ tabList, onSelect }: Props) {
               <button
                 type="button"
                 onClick={() => handleSelect(row.key, row.disable)}
-                className={`inline-block px-4 py-2.5 rounded-t-md transition-all border border-b-3 ${
+                className={`flex items-center px-4 py-2.5 rounded-t-md transition-all border border-b-3 ${
                   row.disable
                     ? "cursor-default"
                     : "hover:bg-budiluhur-300 hover:text-budiluhur-800 hover:border-budiluhur-800"
@@ -50,6 +52,8 @@ export default function TabBarComponent({ tabList, onSelect }: Props) {
                     : " border-budiluhur-700/80 text-budiluhur-700/80"
                 }`}
               >
+                {row.icon && <Icon icon={row.icon} className="mr-2" />}
+
                 {row.title}
               </button>
             </li>

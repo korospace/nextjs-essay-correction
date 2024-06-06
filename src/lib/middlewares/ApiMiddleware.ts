@@ -14,6 +14,11 @@ const examApi: string[] = [
   "/api/exam/create",
   "/api/exam/update",
   "/api/exam/delete",
+  "/api/exam/member/create",
+  "/api/exam/member/delete",
+  "/api/exam/question/create",
+  "/api/exam/question/update",
+  "/api/exam/question/delete",
 ];
 const adminApi: string[] = [
   "/api/admin",
@@ -27,6 +32,7 @@ const requiredPath: string[] = [
   "/api/courses",
   "/api/profile",
   "/api/exam",
+  "/api/exam/member/status",
   "/api/autocomplete",
   ...examApi,
   ...adminApi,
@@ -39,6 +45,8 @@ const requiredPath: string[] = [
 const ApiMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
+    const method = req.method;
+    console.log(method);
 
     if (pathCheck(pathname, requiredPath)) {
       const token = await getToken({

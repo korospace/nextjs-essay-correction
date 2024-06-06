@@ -32,6 +32,7 @@ export type SelectOptionType = {
 
 export type TabBarItemType = {
   key: string;
+  icon?: string;
   title: string;
   selected: boolean;
   disable: boolean;

@@ -76,13 +76,11 @@ export default function ExamCreatePage() {
           />
 
           {/* General Information */}
-          <div
-            className={`${
-              selectedTabKey === "general_information" ? "" : "hidden"
-            } p-4 bg-budiluhur-400 shadow rounded`}
-          >
-            <ExamGeneralInfo />
-          </div>
+          {selectedTabKey === "general_information" && (
+            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+              <ExamGeneralInfo />
+            </div>
+          )}
         </div>
       </main>
     </PageComponent>

@@ -7,6 +7,7 @@ import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
 import {
   ExamMemberInputType,
   ExamMemberSearchParamType,
+  ExamMemberStatuUpdateType,
   ExamMemberWhereType,
   PaginationOptionsType,
 } from "@/lib/types/InputTypes";
@@ -25,6 +26,7 @@ export async function GetExamMember(
     const limit = searchParams.limit;
     const keyword = searchParams.keyword;
     const id_exam = searchParams.id_exam;
+    const id_user = searchParams.id_user;
 
     // -- where clause --
     const whereClause: ExamMemberWhereType = {
@@ -43,6 +45,16 @@ export async function GetExamMember(
       whereClause.id_exam = !isNaN(parseInt(id_exam ?? "0"))
         ? parseInt(id_exam)
         : 0;
+    }
+    if (id_user) {
+      if (
+        session.user.id_user_role === 3 &&
+        parseInt(id_user) != session.user.id_user
+      ) {
+        whereClause.user.id_user = 0; // not found
+      } else {
+        whereClause.user.id_user = id_user;
+      }
     }
 
     // -- pagination --
@@ -100,6 +112,7 @@ export async function CreateExamMember(
     const dtExamExist = await prisma.exam.findFirst({
       where: {
         id_exam: dataInput.id_exam,
+        deleted_by: 0,
       },
     });
 
@@ -111,6 +124,7 @@ export async function CreateExamMember(
         where: {
           id_exam: dataInput.id_exam,
           id_user: dataInput.id_user,
+          deleted_by: 0,
         },
       });
 
@@ -152,6 +166,7 @@ export async function DeleteExamMember(
     const checkExist = await prisma.examMember.findFirst({
       where: {
         id_exam_member: id_exam_member,
+        deleted_by: 0,
       },
     });
 
@@ -178,6 +193,75 @@ export async function DeleteExamMember(
         code: 200,
         message: "exam member delete successfully",
       };
+    }
+  } catch (error: any) {
+    return { status: true, code: 500, message: error.message };
+  }
+}
+
+/**
+ * Update Exam Member Status
+ * -------------------------------
+ */
+export async function UpdateExamMemberStatus(
+  dataInput: ExamMemberStatuUpdateType,
+  session: SessionType
+): Promise<ApiResponseType> {
+  try {
+    // check exam member is exist
+    const checkExist = await prisma.examMember.findFirst({
+      where: {
+        id_exam_member: dataInput.id_exam_member,
+        deleted_by: 0,
+      },
+    });
+
+    if (checkExist === null) {
+      return {
+        status: false,
+        code: 404,
+        message: "exam member is not exist",
+      };
+    } else {
+      if (
+        checkExist.status === "NOT_YET" &&
+        dataInput.status === "ON_GOING" &&
+        session.user.id_user_role !== 3
+      ) {
+        return {
+          status: false,
+          code: 400,
+          message: "the member is not take exam at all",
+        };
+      } else {
+        const examMember = await prisma.examMember.update({
+          data: {
+            start_date:
+              dataInput.status === "ON_GOING"
+                ? new Date()
+                : checkExist.start_date,
+            end_date:
+              dataInput.status === "COMPLETED"
+                ? new Date()
+                : dataInput.status === "ON_GOING"
+                ? null
+                : checkExist.end_date,
+            status: dataInput.status,
+            updated_by: session.user.id_user,
+            updated_date: new Date(),
+          },
+          where: {
+            id_exam_member: dataInput.id_exam_member,
+          },
+        });
+
+        revalidateTag("exam_member");
+        return {
+          status: true,
+          code: 200,
+          message: "exam member status update successfully",
+        };
+      }
     }
   } catch (error: any) {
     return { status: true, code: 500, message: error.message };

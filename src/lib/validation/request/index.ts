@@ -130,3 +130,8 @@ export const ExamMemberInputValidation = z.object({
   id_exam: z.number(),
   id_user: z.number(),
 });
+
+export const ExamMemberStatusUpdateValidation = z.object({
+  id_exam_member: z.number(),
+  status: z.enum(["NOT_YET", "ON_GOING", "COMPLETED"]),
+});

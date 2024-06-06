@@ -38,7 +38,7 @@ export default function SettingPage() {
   ];
 
   // -- use state --
-  const [profile, setProfile] = useState<UserType | null>(null);
+  const [profile, setProfile] = useState<UserType>();
   const [loadingGeneralInfo, setLoadingGeneralInfo] = useState<boolean>(false);
   const [usernameInvalid, setUsernameInvalid] = useState<InvalidFieldType>();
   const [fullnameInvalid, setFullnameInvalid] = useState<InvalidFieldType>();

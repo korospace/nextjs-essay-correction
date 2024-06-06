@@ -95,6 +95,7 @@ export async function CreateExamQuestion(
     const dtExamExist = await prisma.exam.findFirst({
       where: {
         id_exam: dataInput.id_exam,
+        deleted_by: 0,
       },
     });
 
@@ -106,6 +107,7 @@ export async function CreateExamQuestion(
         where: {
           id_exam: dataInput.id_exam,
           question: dataInput.question,
+          deleted_by: 0,
         },
       });
 
@@ -149,6 +151,7 @@ export async function UpdateExamQuestion(
     const dtExamExist = await prisma.exam.findFirst({
       where: {
         id_exam: dataInput.id_exam,
+        deleted_by: 0,
       },
     });
 
@@ -161,6 +164,7 @@ export async function UpdateExamQuestion(
           id_exam_question: { not: dataInput.id_exam_question },
           id_exam: dataInput.id_exam,
           question: dataInput.question,
+          deleted_by: 0,
         },
       });
 
@@ -208,6 +212,7 @@ export async function DeleteExamQuestion(
     const checkExist = await prisma.examQuestion.findFirst({
       where: {
         id_exam_question: id_exam_question,
+        deleted_by: 0,
       },
     });
 

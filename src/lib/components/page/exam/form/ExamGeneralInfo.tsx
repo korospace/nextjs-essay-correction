@@ -23,9 +23,10 @@ import { DateFormating } from "@/lib/helpers/helpers";
  */
 type Props = {
   dtGeneralInfo?: ExamType;
+  afterSubmit?: () => void;
 };
 
-export default function ExamGeneralInfo({ dtGeneralInfo }: Props) {
+export default function ExamGeneralInfo({ dtGeneralInfo, afterSubmit }: Props) {
   // -- Router --
   const router = useRouter();
 
@@ -138,6 +139,7 @@ export default function ExamGeneralInfo({ dtGeneralInfo }: Props) {
     // response
     if (res.status == true) {
       toast.success("exam saved successfully!");
+      afterSubmit ? afterSubmit() : "";
 
       if (dtGeneralInfo === undefined) {
         router.push("/dashboard/exam/update/" + res.data.id_exam);
@@ -340,7 +342,7 @@ export default function ExamGeneralInfo({ dtGeneralInfo }: Props) {
               name="end_time"
               defaultValue={
                 dtGeneralInfo
-                  ? DateFormating.extractDateTime(dtGeneralInfo.start_date).time
+                  ? DateFormating.extractDateTime(dtGeneralInfo.end_date).time
                   : ""
               }
               className={`w-full p-2.5 placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${

@@ -25,6 +25,7 @@ const adminPage: string[] = [
 ];
 const requiredPath: string[] = [
   "/",
+  "/exam",
   "/dashboard",
   "/dashboard/exam",
   "/dashboard/profile",

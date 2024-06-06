@@ -68,6 +68,7 @@ export async function CreateUser(
     const dtUser = await prisma.user.findFirst({
       where: {
         username: dataInput.username,
+        deleted_by: 0,
       },
     });
 
@@ -108,6 +109,7 @@ export async function UpdateUser(
     const checkUserExist = await prisma.user.findFirst({
       where: {
         id_user: dataInput.id_user,
+        deleted_by: 0,
       },
     });
 
@@ -120,6 +122,7 @@ export async function UpdateUser(
       where: {
         username: dataInput.username,
         id_user: { not: dataInput.id_user },
+        deleted_by: 0,
       },
     });
 
@@ -178,6 +181,7 @@ export async function DeleteUser(
     const checkUserExist = await prisma.user.findFirst({
       where: {
         id_user: id_user,
+        deleted_by: 0,
       },
     });
 

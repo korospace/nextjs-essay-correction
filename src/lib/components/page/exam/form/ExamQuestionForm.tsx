@@ -65,6 +65,8 @@ export default function ExamQuestionForm({
     if (question == "" || answer_key == "") return;
 
     // build payload
+    const httpApiPath: string =
+      dtQuestion === undefined ? apiPath + "/create" : apiPath + "/update";
     const httpMethod: string = dtQuestion === undefined ? "POST" : "PUT";
     const httpPayload: ExamQuestionInputType = {
       id_exam_question: dtQuestion?.id_exam_question,
@@ -75,7 +77,11 @@ export default function ExamQuestionForm({
 
     // HTTP
     setLoadingForm(true);
-    const res = await HttpSaveExamQuestion(apiPath, httpMethod, httpPayload);
+    const res = await HttpSaveExamQuestion(
+      httpApiPath,
+      httpMethod,
+      httpPayload
+    );
     setLoadingForm(false);
 
     // response

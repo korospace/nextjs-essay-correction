@@ -1,5 +1,8 @@
 // types
-import { ExamMemberInputType } from "@/lib/types/InputTypes";
+import {
+  ExamMemberInputType,
+  ExamMemberStatuUpdateType,
+} from "@/lib/types/InputTypes";
 import { ApiResponseType } from "@/lib/types/ResultTypes";
 
 const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
@@ -108,6 +111,44 @@ export const HttpDeleteExamMember = async (
       return {
         status: false,
         message: resJson.message,
+      };
+    }
+  } catch (error: any) {
+    return {
+      status: false,
+      message: error.message,
+    };
+  }
+};
+
+/**
+ * Update Exam Member Status
+ * -----------------------------
+ */
+export const HttpUpdateExamMemberStatus = async (
+  apiPath: string,
+  method: string,
+  data: ExamMemberStatuUpdateType
+): Promise<ApiResponseType> => {
+  try {
+    const res = await fetch(baseUrl + apiPath, {
+      method: method,
+      body: JSON.stringify(data),
+    });
+
+    const resJson = await res.json();
+
+    if (res.ok) {
+      return {
+        status: true,
+        message: "Exam member status update successfully",
+        data: resJson.data,
+      };
+    } else {
+      return {
+        status: false,
+        message: resJson.message,
+        data: resJson.data,
       };
     }
   } catch (error: any) {
