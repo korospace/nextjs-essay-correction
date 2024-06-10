@@ -1,4 +1,6 @@
 import { ExamStatus } from "@prisma/client";
+// types
+import { PreProcessingType } from "./ResultTypes";
 
 /**
  * General
@@ -13,6 +15,23 @@ export type SearchParamsType = {
 export type PaginationOptionsType = {
   skip: number;
   take: number;
+};
+
+/**
+ * Training
+ * --------------------------
+ */
+export type TrainingInputType = {
+  answer_key: string;
+  answer: string;
+  expectation_grade?: string;
+};
+
+export type TrainingInputV2Type = {
+  similiarity_matrix: string;
+  max_simmatrix: string;
+  answer: PreProcessingType;
+  answer_key: PreProcessingType;
 };
 
 /**
@@ -137,4 +156,34 @@ export type ExamMemberWhereType = {
 export type ExamMemberStatuUpdateType = {
   id_exam_member: number;
   status: ExamStatus;
+};
+
+/**
+ * Exam Answer
+ * --------------------------
+ */
+export type ExamAnswerInputType = {
+  id_exam_answer?: number;
+  id_exam_question: number;
+  id_user: number;
+  answer: string;
+};
+
+export type ExamAnswerSearchParamType = SearchParamsType & {
+  id_exam: string;
+  id_user: string;
+};
+
+export type ExamAnswerWhereType = {
+  exam_question?: any;
+  user?: any;
+};
+
+/**
+ * Exam Result
+ * --------------------------
+ */
+export type ExamResultSearchParamType = {
+  id_exam: string;
+  id_user: string;
 };

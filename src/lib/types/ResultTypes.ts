@@ -2,11 +2,31 @@ import { ExamStatus } from "@prisma/client";
 // nextjs
 import { NextMiddleware } from "next/server";
 
-export type PreProcessingType = {
-  str: string;
-  arr: string[];
+export type DurationType = {
+  hour: number;
+  minute: number;
+  second: number;
 };
 
+export type SynonymType = {
+  id_synonym: number;
+  word: string;
+  tag: string;
+  synonym: string;
+};
+
+/**
+ * Middleware
+ * --------------------------
+ */
+export type MiddlewareFactoryType = (
+  middleware: NextMiddleware
+) => NextMiddleware;
+
+/**
+ * Response API
+ * --------------------------
+ */
 export type ApiResponseType = {
   status: boolean;
   code?: number;
@@ -16,10 +36,55 @@ export type ApiResponseType = {
   data?: any;
 };
 
-export type MiddlewareFactoryType = (
-  middleware: NextMiddleware
-) => NextMiddleware;
+/**
+ * Course
+ * --------------------------
+ */
+export type CourseType = {
+  id_course: number;
+  name: string;
+  description: string;
+};
 
+/**
+ * Essay Correction
+ * --------------------------
+ */
+export type TrainingType = {
+  wrong?: number;
+  correct?: number;
+  accuracy?: number;
+  grade: TrainingGradeType;
+  details: TrainingDetailType[];
+};
+
+export type TrainingGradeType = {
+  grade: string;
+  score: number;
+};
+
+export type TrainingDetailType = {
+  grade: TrainingGradeType;
+  similiarity_matrix: string;
+  max_simmatrix: string;
+  answer: PreProcessingType;
+  answer_key: PreProcessingType;
+};
+
+export type PreProcessingType = {
+  str?: string;
+  arr?: string[];
+  raw_value?: string;
+  cleaned?: string;
+  stemmed?: string;
+  stopword_removed?: string;
+  n_gram?: string;
+};
+
+/**
+ * User
+ * --------------------------
+ */
 export type UserType = {
   id_user: number;
   username: string;
@@ -36,12 +101,10 @@ export interface SessionType {
   };
 }
 
-export type CourseType = {
-  id_course: number;
-  name: string;
-  description: string;
-};
-
+/**
+ * Exam
+ * --------------------------
+ */
 export type ExamType = {
   id_exam: number;
   title: string;
@@ -58,6 +121,8 @@ export type ExamMemberType = {
   id_exam_member: number;
   id_exam: number;
   id_user: number;
+  score?: number;
+  grade?: string;
   start_date?: string;
   end_date?: string;
   status?: ExamStatus;

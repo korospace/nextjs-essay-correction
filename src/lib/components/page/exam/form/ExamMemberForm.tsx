@@ -36,8 +36,8 @@ export default function ExamMemberForm({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // -- Use State --
+  const [acValue, setAcValue] = useState<string>("");
   const [loadingForm, setLoadingForm] = useState<boolean>(false);
-  const [clearAutocomplete, setClearAutocomplete] = useState<boolean>(false);
   const [idUserInvalid, setIdUsertInvalid] = useState<InvalidFieldType>();
   const [idUser, setIdUser] = useState<string>("");
   const [fullName, setFullName] = useState<string>("");
@@ -73,10 +73,9 @@ export default function ExamMemberForm({
     // response
     if (res.status == true) {
       toast.success("data saved successfully!");
-      setClearAutocomplete(false);
-      setClearAutocomplete(true);
       setFullName("");
       afterSubmit();
+      setAcValue("");
       setIdUser("");
     } else {
       if (res.message === "validation failed") {
@@ -109,10 +108,10 @@ export default function ExamMemberForm({
           {/* Student */}
           <div className="mb-5 flex-1">
             <AutoCompleteComponent
+              value={acValue}
               label="Student"
               tag="ac_student"
               invalid={idUserInvalid}
-              clear={clearAutocomplete}
               apiPath="api/autocomplete/student"
               placeholder="Search username / full name"
               onClear={() => {
@@ -123,6 +122,7 @@ export default function ExamMemberForm({
                 const splitValue = opt.value.split(" - ");
                 setIdUsertInvalid({ invalid: false });
                 setFullName(splitValue[1]);
+                setAcValue(opt.value);
                 setIdUser(opt.key);
               }}
             />

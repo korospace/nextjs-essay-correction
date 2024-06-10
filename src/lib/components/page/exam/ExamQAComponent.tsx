@@ -2,8 +2,6 @@
 import { useEffect, useState } from "react";
 // nextjs
 import { Divider } from "@nextui-org/react";
-// external lib
-import { useRouter } from "next-nprogress-bar";
 // types
 import { ExamMemberType, ExamType } from "@/lib/types/ResultTypes";
 import { TabBarItemType } from "@/lib/types/ComponentTypes";
@@ -12,6 +10,7 @@ import { DateFormating, getPathName } from "@/lib/helpers/helpers";
 // components
 import TabBarComponent from "../TabBarComponent";
 import QAForm from "./QA/QAForm";
+import QAResult from "./QA/QAResult";
 
 /**
  * Props
@@ -26,9 +25,6 @@ export default function ExamQAComponent({
   examGeneralInfo,
   examMember,
 }: Props) {
-  // -- hook --
-  const router = useRouter();
-
   // -- Tab Bar List --
   const [tabList, setTabList] = useState<TabBarItemType[]>([
     {
@@ -81,20 +77,34 @@ export default function ExamQAComponent({
 
   return (
     <div className="w-full h-full max-h-full p-5 flex flex-col">
-      {/* Title */}
-      <h1 className="text-4xl text-budiluhur-700 font-bold">
-        {examGeneralInfo.title}
-      </h1>
-      <p className="text-2xl text-budiluhur-700 mt-2">
-        {examGeneralInfo.description}
-      </p>
+      <div className="flex justify-between">
+        {/* Title */}
+        <div className="flex-1">
+          <h1 className="text-3xl text-budiluhur-700 font-bold">
+            {examGeneralInfo.title}
+          </h1>
+          <p className="w-full max-w-3xl text-md text-budiluhur-700 mt-2 font-light">
+            {examGeneralInfo.description}
+          </p>
+        </div>
+
+        {/* Student Name */}
+        <div className="text-right">
+          <h1 className="text-3xl text-budiluhur-700 font-bold">
+            {examMember.user.full_name}
+          </h1>
+          <p className="text-lg text-budiluhur-700 mt-2">
+            {examMember.user.username}
+          </p>
+        </div>
+      </div>
 
       {/* Divider */}
-      <div className="mt-5 mb-6">
+      <div className="mt-2.5 mb-3">
         <Divider className="bg-budiluhur-700 opacity-50" />
       </div>
 
-      <div className="flex-1 flex flex-col mb-5 p-5 bg-budiluhur-500 rounded-md shadow border border-budiluhur-700 overflow-hidden">
+      <div className="flex-1 flex flex-col p-5 bg-budiluhur-500 rounded-md shadow border border-budiluhur-700 overflow-hidden">
         {/* Tab Bar */}
         <TabBarComponent
           tabList={tabList}
@@ -104,20 +114,22 @@ export default function ExamQAComponent({
         />
 
         {selectedTabKey === "exam_question_answer" && (
-          <div className="flex-1 p-4 bg-budiluhur-400 shadow rounded-b-md border border-budiluhur-700 overflow-auto">
+          <div className="flex-1 p-4 bg-budiluhur-400 shadow rounded-b-md border border-budiluhur-700 overflow-hidden">
             <QAForm
               examGeneralInfo={examGeneralInfo}
               examMember={examMember}
               onEnded={() => {
                 window.location.reload();
-                // router.replace(getPathName());
               }}
             />
           </div>
         )}
         {selectedTabKey === "exam_result" && (
-          <div className="flex-1 p-4 bg-budiluhur-400 shadow rounded-b-md border border-budiluhur-700 overflow-auto">
-            result
+          <div className="flex-1 p-4 bg-budiluhur-400 shadow rounded-b-md border border-budiluhur-700 overflow-hidden">
+            <QAResult
+              examGeneralInfo={examGeneralInfo}
+              examMember={examMember}
+            />
           </div>
         )}
       </div>

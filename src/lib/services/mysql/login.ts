@@ -1,5 +1,5 @@
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // helpers
 import { HashText } from "@/lib/helpers/helpers";
 // types

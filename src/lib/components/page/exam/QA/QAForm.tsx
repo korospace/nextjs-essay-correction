@@ -3,15 +3,20 @@ import { useEffect, useState } from "react";
 // external lib
 import { Icon } from "@iconify/react/dist/iconify.js";
 import toast from "react-hot-toast";
-// helpers
-import { DateFormating } from "@/lib/helpers/helpers";
 // types
-import { ExamMemberType, ExamType } from "@/lib/types/ResultTypes";
-import { ExamMemberStatuUpdateType } from "@/lib/types/InputTypes";
+import {
+  ExamAnswerType,
+  ExamMemberType,
+  ExamQuestionType,
+  ExamType,
+} from "@/lib/types/ResultTypes";
 // component
-import QACountdown from "./QACountdown";
+import QANavQuestion from "./QAFormNavQuestion";
+import QACountdown from "./QAFormCountdown";
+import QAFormAnswer from "./QAFormAnswer";
 // services
-import { HttpUpdateExamMemberStatus } from "@/lib/services/functions/frontend/examMemberFunc";
+import { HttpGetExamQuestion } from "@/lib/services/functions/frontend/examQuestionFunc";
+import { HttpGetExamAnswer } from "@/lib/services/functions/frontend/examAnswerFunc";
 
 /**
  * Props
@@ -29,84 +34,86 @@ export default function QAForm({
   onEnded,
 }: Props) {
   // -- Use State --
+  const [selectedQuestion, setSelectedQuestion] = useState<ExamQuestionType>();
+  const [questionList, setQuestionList] = useState<ExamQuestionType[]>([]);
+  const [answerList, setAnswerList] = useState<ExamAnswerType[]>([]);
 
   // -- Use Effect --
+  useEffect(() => {
+    if (examGeneralInfo && examMember) {
+      fetchQuestion();
+      fetchAnswer();
+    }
+  }, [examGeneralInfo, examMember]);
 
   // -- Function --
-  const getRemainingTime = (
-    endDate: string,
-    startExam: string,
-    duration: number
-  ): string => {
-    const endDateTime = new Date(endDate);
-    const startExamTime = new Date(startExam);
-
-    const timeDifference = endDateTime.getTime() - startExamTime.getTime();
-
-    const endExamTime = new Date(
-      startExamTime.getTime() + Math.min(timeDifference, duration * 60000)
+  const fetchQuestion = async () => {
+    const res = await HttpGetExamQuestion(
+      `api/exam/question?id_exam=${examGeneralInfo?.id_exam}`
     );
 
-    const endExamTimeString = endExamTime.toISOString();
-
-    return endExamTimeString;
-  };
-
-  const handleTimeEnded = async () => {
-    // build payload
-    const httpMethod: string = "PUT";
-    const httpPayload: ExamMemberStatuUpdateType = {
-      id_exam_member: examMember?.id_exam_member,
-      status: "COMPLETED",
-    };
-
-    // HTTP
-    const res = await HttpUpdateExamMemberStatus(
-      "api/exam/member/status",
-      httpMethod,
-      httpPayload
-    );
-
-    // response
-    if (res.status == true) {
-      onEnded();
-    } else {
+    if (res.status == false) {
       toast.error(res.message);
+    } else {
+      setQuestionList(res.data.data);
     }
   };
 
-  const checkExamEndDate = (endDate: string): boolean => {
-    const unixEndDate = DateFormating.toUnixTimeStamp(endDate);
-    const unixNow = DateFormating.toUnixTimeStamp(new Date().toString());
+  const fetchAnswer = async () => {
+    const res = await HttpGetExamAnswer(
+      `api/exam/answer?id_exam=${examGeneralInfo?.id_exam}&id_user=${examMember.id_user}`
+    );
 
-    return unixEndDate < unixNow;
+    if (res.status == false) {
+      toast.error(res.message);
+    } else {
+      setAnswerList(res.data.data);
+    }
   };
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="h-full max-h-full flex justify-center items-center gap-4">
       {examGeneralInfo === undefined || examMember === undefined ? (
         <Icon icon="eos-icons:loading" className={`text-5xl`} />
       ) : (
         <>
-          <div>
+          <div className="h-full max-h-full flex flex-col gap-2">
             {/* count down */}
-            <div className="w-[202px] px-4 py-2 text-center text-budiluhur-700 bg-budiluhur-500 rounded-b border border-budiluhur-700">
-              {examMember.status == "COMPLETED" ||
-              checkExamEndDate(examGeneralInfo.end_date) ? (
-                <span>__ : __ : __</span>
-              ) : (
-                <QACountdown
-                  date={getRemainingTime(
-                    examGeneralInfo.end_date,
-                    examMember.start_date ?? "",
-                    examGeneralInfo.duration
-                  )}
-                  onEnded={handleTimeEnded}
-                />
-              )}
+            <div className="w-[202px]">
+              <QACountdown
+                examGeneralInfo={examGeneralInfo}
+                examMember={examMember}
+                onEnded={onEnded}
+              />
+            </div>
+            {/* Question Nav */}
+            <div className="w-[202px] flex-1 overflow-hidden">
+              <QANavQuestion
+                onChoose={(question) => {
+                  setSelectedQuestion(question);
+                  fetchAnswer();
+                }}
+                selectedQuestion={selectedQuestion}
+                examGeneralInfo={examGeneralInfo}
+                examQuestionList={questionList}
+                examAnswerList={answerList}
+                examMember={examMember}
+              />
             </div>
           </div>
-          <div className="flex-1"></div>
+          <div className="flex-1 h-full max-h-full">
+            <QAFormAnswer
+              onChoose={(question) => {
+                setSelectedQuestion(question);
+                fetchAnswer();
+              }}
+              selectedQuestion={selectedQuestion}
+              examGeneralInfo={examGeneralInfo}
+              examQuestionList={questionList}
+              examAnswerList={answerList}
+              examMember={examMember}
+            />
+          </div>
         </>
       )}
     </div>

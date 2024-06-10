@@ -19,7 +19,6 @@ import { HttpGetExam } from "@/lib/services/functions/frontend/examFunc";
 import { HttpGetExamMember } from "@/lib/services/functions/frontend/examMemberFunc";
 // helpers
 import { DateFormating } from "@/lib/helpers/helpers";
-import { getEnabledExperimentalFeatures } from "next/dist/server/config";
 import ExamStartComponent from "@/lib/components/page/exam/ExamStartComponent";
 
 /**
@@ -34,7 +33,7 @@ type Props = {
 
 export default function ExamDetailPage({ params }: Props) {
   const id_exam = params.slug.length > 0 ? params.slug[0] : "";
-  const id_user = params.slug.length > 2 ? params.slug[1] : "";
+  const id_user = params.slug.length > 1 ? params.slug[1] : "";
 
   // -- hook --
   const router = useRouter();
@@ -45,7 +44,6 @@ export default function ExamDetailPage({ params }: Props) {
   const [examGeneralInfo, setExamGeneralInfo] = useState<ExamType>();
   const [examMember, setExamMember] = useState<ExamMemberType>();
   const [examIsTaken, setExamIsTake] = useState<boolean | undefined>();
-  const [loading, setLoading] = useState<boolean>(false);
 
   // -- Use Effect --
   useEffect(() => {
@@ -88,14 +86,18 @@ export default function ExamDetailPage({ params }: Props) {
     }
   };
   const fetchMember = async () => {
-    setLoading(true);
-    const res = await HttpGetExamMember(`api/exam/member?id_user=${id_user}`);
-    setLoading(false);
+    const res = await HttpGetExamMember(
+      `api/exam/member?id_exam=${id_exam}&id_user=${id_user}`
+    );
 
     if (res.status == false) {
       toast.error(res.message);
     } else {
-      setExamMember(res.data.data[0]);
+      if (res.data.data.length == 0) {
+        router.push("/not-found");
+      } else {
+        setExamMember(res.data.data[0]);
+      }
     }
   };
 
@@ -116,9 +118,7 @@ export default function ExamDetailPage({ params }: Props) {
   return (
     <PageComponent metaTitle="Exam">
       <main className="h-screen max-h-screen flex justify-center items-center bg-budiluhur-300">
-        {examGeneralInfo === undefined ||
-        examMember === undefined ||
-        loading ? (
+        {examGeneralInfo === undefined || examMember === undefined ? (
           <Icon icon="eos-icons:loading" className={`text-5xl`} />
         ) : (
           <>
@@ -128,9 +128,9 @@ export default function ExamDetailPage({ params }: Props) {
               <>
                 {!examIsTaken || examIsTaken === undefined ? (
                   <ExamStartComponent
-                    afterUpdate={() => {
+                    afterUpdate={async () => {
+                      await fetchMember();
                       setExamIsTake(true);
-                      fetchMember();
                     }}
                     examGeneralInfo={examGeneralInfo}
                     examMember={examMember}

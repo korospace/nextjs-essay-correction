@@ -1,7 +1,7 @@
 // nextjs
 import { revalidateTag } from "next/cache";
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // types
 import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
 import {
@@ -21,12 +21,21 @@ export async function GetExam(
 ): Promise<ApiResponseType> {
   try {
     // -- params value --
-    const id_exam = searchParams.id_exam;
-    const id_course = searchParams.id_course;
-    const status = searchParams.status;
     const page = searchParams.page;
     const limit = searchParams.limit;
     const keyword = searchParams.keyword;
+    const status = searchParams.status;
+    const id_exam = !isNaN(parseInt(searchParams.id_exam ?? "0"))
+      ? parseInt(searchParams.id_exam)
+      : 0;
+    const id_course = !isNaN(parseInt(searchParams.id_course ?? "0"))
+      ? parseInt(searchParams.id_course)
+      : 0;
+
+    // -- include ==
+    let include: any = {
+      course: true,
+    };
 
     // -- where clause --
     const whereClause: ExamWhereType = {
@@ -40,9 +49,7 @@ export async function GetExam(
     };
     // AND
     if (id_exam) {
-      whereClause.id_exam = !isNaN(parseInt(id_exam ?? "0"))
-        ? parseInt(id_exam)
-        : 0;
+      whereClause.id_exam = id_exam;
     }
     if (session.user.id_user_role === 2) {
       whereClause.created_by = {
@@ -50,6 +57,13 @@ export async function GetExam(
       };
     }
     if (session.user.id_user_role === 3) {
+      include.exam_member = {
+        where: {
+          id_user: session.user.id_user,
+          deleted_by: 0,
+        },
+      };
+
       whereClause.exam_member = {
         some: {
           id_user: session.user.id_user,
@@ -62,9 +76,7 @@ export async function GetExam(
     }
     // OR
     if (whereClause.OR && id_course) {
-      whereClause.OR[0].id_course = !isNaN(parseInt(id_course ?? "0"))
-        ? parseInt(id_course)
-        : 0;
+      whereClause.OR[0].id_course = id_course;
     }
 
     // -- pagination --
@@ -83,11 +95,10 @@ export async function GetExam(
         deleted_by: 0,
       },
       include: {
-        course: true,
-        exam_member: session.user.id_user_role === 3,
+        ...include,
       },
       orderBy: {
-        created_date: "desc",
+        id_exam: "desc",
       },
       ...paginationParam,
     });

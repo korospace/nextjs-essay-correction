@@ -4,6 +4,8 @@ import { Fragment, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 // type
 import { ExamQuestionType, ExamType } from "@/lib/types/ResultTypes";
+// helpers
+import { createExcerpt } from "@/lib/helpers/helpers";
 // components
 import ExamQuestionForm from "./ExamQuestionForm";
 
@@ -39,7 +41,9 @@ export default function ExamQuestionRow({
     <Fragment>
       <tr className="border-b border-budiluhur-700 bg-budiluhur-300">
         <td className="px-6 py-4 align-top">{no}</td>
-        <td className="px-6 py-4 align-top">{dtQuestion.question}</td>
+        <td className="px-6 py-4 align-top">
+          {createExcerpt(dtQuestion.question, 200)}
+        </td>
         <td className="px-6 py-4 flex gap-2 justify-end">
           <button
             onClick={() => setShowForm(true)}

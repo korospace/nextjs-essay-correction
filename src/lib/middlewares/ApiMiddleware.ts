@@ -33,6 +33,8 @@ const requiredPath: string[] = [
   "/api/profile",
   "/api/exam",
   "/api/exam/member/status",
+  "/api/exam/answer",
+  "/api/exam/result",
   "/api/autocomplete",
   ...examApi,
   ...adminApi,
@@ -46,7 +48,6 @@ const ApiMiddleware: MiddlewareFactoryType = (middleware: NextMiddleware) => {
   return async (req: NextRequest, next: NextFetchEvent) => {
     const pathname = req.nextUrl.pathname;
     const method = req.method;
-    console.log(method);
 
     if (pathCheck(pathname, requiredPath)) {
       const token = await getToken({

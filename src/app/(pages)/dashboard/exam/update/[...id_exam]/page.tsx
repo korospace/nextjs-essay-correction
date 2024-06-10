@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 // nextjs
 import { Divider } from "@nextui-org/react";
 // external lib
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next-nprogress-bar";
 import toast from "react-hot-toast";
 // components
@@ -125,28 +126,36 @@ export default function ExamUpdatePage({ params }: Props) {
             }}
           />
 
-          {/* General Information */}
-          {selectedTabKey === "general_information" && (
-            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
-              <ExamGeneralInfo
-                dtGeneralInfo={examGeneralInfo}
-                afterSubmit={() => fetchExamGeneralInfo()}
-              />
+          {examGeneralInfo === undefined ? (
+            <div className={`p-4 flex justify-center`}>
+              <Icon icon="eos-icons:loading" className={`text-5xl`} />
             </div>
-          )}
+          ) : (
+            <>
+              {/* General Information */}
+              {selectedTabKey === "general_information" && (
+                <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+                  <ExamGeneralInfo
+                    dtGeneralInfo={examGeneralInfo}
+                    afterSubmit={() => fetchExamGeneralInfo()}
+                  />
+                </div>
+              )}
 
-          {/* Exam Question */}
-          {selectedTabKey === "exam_question" && (
-            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
-              <ExamQuestion dtGeneralInfo={examGeneralInfo} />
-            </div>
-          )}
+              {/* Exam Question */}
+              {selectedTabKey === "exam_question" && (
+                <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+                  <ExamQuestion dtGeneralInfo={examGeneralInfo} />
+                </div>
+              )}
 
-          {/* Exam Member */}
-          {selectedTabKey === "exam_member" && (
-            <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
-              <ExamMember dtGeneralInfo={examGeneralInfo} />
-            </div>
+              {/* Exam Member */}
+              {selectedTabKey === "exam_member" && (
+                <div className={`p-4 bg-budiluhur-400 shadow rounded`}>
+                  <ExamMember dtGeneralInfo={examGeneralInfo} />
+                </div>
+              )}
+            </>
           )}
         </div>
       </main>

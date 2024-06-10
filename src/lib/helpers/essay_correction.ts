@@ -1,5 +1,5 @@
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // external lib
 import { StemmerId, WordTokenizer } from "natural";
 import { removeStopwords, ind } from "stopword";
@@ -8,17 +8,18 @@ import { Stemmer, Tokenizer } from "sastrawijs";
 import fs from "fs";
 import path from "path";
 // types
-import { PreProcessingType } from "@/lib/types/ResultTypes";
+import {
+  PreProcessingType,
+  TrainingDetailType,
+  TrainingType,
+} from "@/lib/types/ResultTypes";
+import { TrainingInputType, TrainingInputV2Type } from "../types/InputTypes";
+// helpers
+import { cleanText, getSynonymsByWord } from "./helpers";
 
 export const EssayCorrection = {
   cleanText: (text: string) => {
-    let cleanedText = text.replace(/[^a-zA-Z0-9\s]/g, "");
-    // remove spasi berturut-turut dengan satu spasi
-    cleanedText = cleanedText.replace(/\s+/g, " ");
-    // menghapus spasi di awal dan akhir
-    cleanedText = cleanedText.trim();
-
-    return cleanedText;
+    return cleanText(text);
   },
   stemmingNatural: (text: string): PreProcessingType => {
     const naturalTokenizer = new WordTokenizer();
@@ -78,19 +79,30 @@ export const EssayCorrection = {
       arr: removedTokens,
     };
   },
+  nGram: (tokens: string[], n: number): PreProcessingType => {
+    const nGrams = [];
+    for (let i = 0; i < tokens.length - n + 1; i++) {
+      nGrams.push(tokens.slice(i, i + n).join(" "));
+    }
+
+    return {
+      str: nGrams.join(" "),
+      arr: nGrams,
+    };
+  },
   areSynonyms: async (word1: string, word2: string): Promise<boolean> => {
     if (word1 === word2) return true;
 
-    const synonym = await prisma.synonym.findFirst({
-      where: {
-        word: word1,
-      },
-    });
+    const synonym = getSynonymsByWord(word1);
 
     if (synonym == null) {
       return false;
     } else {
-      return (synonym.synonym || "").split(", ").includes(word2);
+      console.log(word1, word2);
+
+      console.log(synonym.includes(word2));
+
+      return synonym.includes(word2);
     }
   },
   lev: async (typo: string, bener: string): Promise<number> => {
@@ -159,13 +171,7 @@ export const EssayCorrection = {
     }
     return 100 - (sum / sim.length) * 100;
   },
-  resultLevGrading: (sim: any): string => {
-    let sum = 0;
-    for (const i of sim) {
-      sum += i;
-    }
-    let percentage = 100 - (sum / sim.length) * 100;
-
+  grading: (percentage: number): string => {
     if (percentage >= 85) {
       return "A";
     } else if (percentage >= 80 && percentage < 85) {
@@ -183,5 +189,169 @@ export const EssayCorrection = {
     } else {
       return "E";
     }
+  },
+  trainingData: async (data: TrainingInputType[]): Promise<TrainingType> => {
+    let EC = EssayCorrection;
+    let wrong = 0;
+    let correct = 0;
+    let accuracy = 0;
+    let averageScore = 0;
+    let trainingDetails: TrainingDetailType[] = [];
+
+    // looping question & answer
+    for (let iteration = 0; iteration < data.length; iteration++) {
+      const nGramValue = 5;
+      const row = data[iteration];
+
+      // -- pre process
+      let ak_cleaned = EC.cleanText(row.answer_key);
+      let ak_stemmed = EC.stemmingSastrawi(ak_cleaned);
+      let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
+      let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
+      let a_cleaned = EC.cleanText(row.answer);
+      let a_stemmed = EC.stemmingSastrawi(a_cleaned);
+      let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
+      let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
+
+      // -- similarity matrix
+      const similarityMatrix = await EC.simMatrix(
+        ak_ngram.arr ?? [],
+        a_ngram.arr ?? []
+      );
+
+      // const similarityMatrix = await EC.simMatrix(
+      //   ak_stopword.arr ?? [],
+      //   a_stopword.arr ?? []
+      // );
+
+      // -- max similarity between each word
+      const maxSimilarity = EC.maxSim(similarityMatrix);
+
+      // -- Hitung nilai kesamaan rata-rata
+      const resultLev = EC.resultLev(maxSimilarity);
+      const resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
+      const resultLevGrade = EC.grading(resultLevPercentage);
+
+      // -- expectation counter
+      if (row.expectation_grade) {
+        if (row.expectation_grade === resultLevGrade) {
+          correct = correct + 1;
+        } else {
+          wrong = wrong + 1;
+        }
+
+        // -- accuracy
+        accuracy = (correct / (iteration + 1)) * 100;
+      }
+
+      // -- average score
+      averageScore =
+        (averageScore * iteration + resultLevPercentage) / (iteration + 1);
+
+      const trainingData = {
+        grade: {
+          score: resultLevPercentage,
+          grade: resultLevGrade,
+        },
+        similiarity_matrix: JSON.stringify(similarityMatrix),
+        max_simmatrix: JSON.stringify(maxSimilarity),
+        answer: {
+          raw_value: row.answer,
+          cleaned: a_cleaned,
+          stemmed: a_stemmed.str,
+          stopword_removed: a_stopword.str,
+          n_gram: a_ngram.str,
+        },
+        answer_key: {
+          raw_value: row.answer_key,
+          cleaned: ak_cleaned,
+          stemmed: ak_stemmed.str,
+          stopword_removed: ak_stopword.str,
+          n_gram: ak_ngram.str,
+        },
+      };
+
+      trainingDetails.push(trainingData);
+    }
+
+    return {
+      wrong: wrong,
+      correct: correct,
+      accuracy: accuracy,
+      grade: {
+        score: averageScore,
+        grade: EC.grading(averageScore),
+      },
+      details: trainingDetails,
+    };
+  },
+  trainingDataV2: async (
+    data: TrainingInputV2Type[]
+  ): Promise<TrainingType> => {
+    let EC = EssayCorrection;
+    let averageScore = 0;
+    let trainingDetails: TrainingDetailType[] = [];
+
+    // looping question & answer
+    for (let iteration = 0; iteration < data.length; iteration++) {
+      const row = data[iteration];
+
+      // -- pre process
+      let ak_cleaned = row.answer_key.cleaned;
+      let ak_stemmed = row.answer_key.stemmed;
+      let ak_stopword = row.answer_key.stopword_removed;
+      let ak_ngram = row.answer_key.n_gram;
+      let a_cleaned = row.answer.cleaned;
+      let a_stemmed = row.answer.stemmed;
+      let a_stopword = row.answer.stopword_removed;
+      let a_ngram = row.answer.n_gram;
+
+      // -- max similarity between each word
+      const maxSimilarity = row.max_simmatrix
+        ? JSON.parse(row.max_simmatrix)
+        : [];
+
+      // -- Hitung nilai kesamaan rata-rata
+      const resultLev = EC.resultLev(maxSimilarity);
+      const resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
+      const resultLevGrade = EC.grading(resultLevPercentage);
+
+      // -- average score
+      averageScore =
+        (averageScore * iteration + resultLevPercentage) / (iteration + 1);
+
+      const trainingData = {
+        grade: {
+          score: resultLevPercentage,
+          grade: resultLevGrade,
+        },
+        similiarity_matrix: row.similiarity_matrix,
+        max_simmatrix: row.max_simmatrix,
+        answer: {
+          raw_value: row.answer.raw_value,
+          cleaned: a_cleaned,
+          stemmed: a_stemmed,
+          stopword_removed: a_stopword,
+          n_gram: a_ngram,
+        },
+        answer_key: {
+          raw_value: row.answer_key.raw_value,
+          cleaned: ak_cleaned,
+          stemmed: ak_stemmed,
+          stopword_removed: ak_stopword,
+          n_gram: ak_ngram,
+        },
+      };
+
+      trainingDetails.push(trainingData);
+    }
+
+    return {
+      grade: {
+        score: averageScore,
+        grade: EC.grading(averageScore),
+      },
+      details: trainingDetails,
+    };
   },
 };

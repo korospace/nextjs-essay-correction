@@ -24,7 +24,7 @@ import {
  * -----------------------------------
  */
 type Props = {
-  dtGeneralInfo: ExamType | undefined;
+  dtGeneralInfo: ExamType;
 };
 
 export default function ExamMember({ dtGeneralInfo }: Props) {
@@ -121,7 +121,10 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
       <SearchbarComponent
         placeholder="Search member"
         showBtnAdd={true}
-        searchOnEnter={(keyword) => setKeyword(keyword)}
+        searchOnEnter={(keyword) => {
+          setKeyword(keyword);
+          setPage(1);
+        }}
         btnOnClick={() => setShowForm(true)}
       />
 
@@ -143,6 +146,9 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
               <th scope="col" className="px-6 py-3">
                 Status
               </th>
+              <th scope="col" className="px-6 py-3">
+                Score/Grade
+              </th>
               <th scope="col" className="px-6 py-3 text-right">
                 Action
               </th>
@@ -153,7 +159,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
           <tbody>
             {/* Form Add New */}
             <tr className="border-b border-budiluhur-700 bg-budiluhur-300">
-              <td colSpan={5}>
+              <td colSpan={6}>
                 <ExamMemberForm
                   apiPath="api/exam/member"
                   dtGeneralInfo={dtGeneralInfo}
@@ -167,7 +173,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
             {memberListLoading ? (
               // Loading
               <tr className={`border-b border-budiluhur-700 bg-budiluhur-300`}>
-                <td colSpan={5} className="px-6 py-4">
+                <td colSpan={6} className="px-6 py-4">
                   <div className="flex justify-center">
                     <Icon icon="eos-icons:loading" className={`text-2xl`} />
                   </div>
@@ -179,7 +185,7 @@ export default function ExamMember({ dtGeneralInfo }: Props) {
                   <tr
                     className={`border-b border-budiluhur-700 bg-budiluhur-300`}
                   >
-                    <td colSpan={5} className="px-6 py-4">
+                    <td colSpan={6} className="px-6 py-4">
                       <div className="flex justify-center">data not found</div>
                     </td>
                   </tr>

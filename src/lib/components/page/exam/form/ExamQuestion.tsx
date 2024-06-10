@@ -95,7 +95,10 @@ export default function ExamQuestion({ dtGeneralInfo }: Props) {
       <SearchbarComponent
         placeholder="Search question"
         showBtnAdd={true}
-        searchOnEnter={(keyword) => setKeyword(keyword)}
+        searchOnEnter={(keyword) => {
+          setKeyword(keyword);
+          setPage(1);
+        }}
         btnOnClick={() => setShowForm(true)}
       />
 

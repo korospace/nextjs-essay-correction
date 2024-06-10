@@ -13,8 +13,8 @@ import { HttpGetAutocomplete } from "@/lib/services/functions/frontend/autoCompl
  * -----------------------------------
  */
 type Props = {
-  clear?: boolean;
   apiPath: string;
+  value: string;
   tag: string;
   label: string;
   placeholder: string;
@@ -24,8 +24,8 @@ type Props = {
 };
 
 export default function AutoCompleteComponent({
-  clear,
   apiPath,
+  value,
   tag,
   label,
   placeholder,
@@ -44,10 +44,9 @@ export default function AutoCompleteComponent({
 
   // -- Use Effect --
   useEffect(() => {
-    if (clear === true) {
-      setAcValue("");
-    }
-  }, [clear]);
+    setAcValue(value);
+    console.log(value);
+  }, [value]);
   useEffect(() => {
     const handleClickOutside = (event: any) => {
       if (outerDivRef.current && !outerDivRef.current.contains(event.target)) {

@@ -8,7 +8,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next-nprogress-bar";
 // type
 import { ExamType, SessionType } from "@/lib/types/ResultTypes";
-import { DateFormating } from "@/lib/helpers/helpers";
+import { DateFormating, createExcerpt } from "@/lib/helpers/helpers";
 // components
 import ExamStatusComponent from "./ExamStatusComponent";
 
@@ -59,7 +59,9 @@ export default function ExamRowTableComponent({ dtExam, no, onDelete }: Props) {
         <td className="px-6 py-4 align-top">{no}</td>
         <td className="px-6 py-4 align-top">{dtExam.course.name}</td>
         <td className="px-6 py-4 align-top">{dtExam.title}</td>
-        <td className="px-6 py-4 align-top">{dtExam.description}</td>
+        <td className="px-6 py-4 align-top">
+          {createExcerpt(dtExam.description, 100)}
+        </td>
         {dataSession?.user.id_user_role === 3 && (
           <td className="px-6 py-4 align-top">
             <ExamStatusComponent
@@ -70,7 +72,7 @@ export default function ExamRowTableComponent({ dtExam, no, onDelete }: Props) {
             />
           </td>
         )}
-        <td className="px-6 py-4 align-top">
+        <td className="px-6 py-4 align-top min-w-64">
           <table>
             <tr>
               <td>

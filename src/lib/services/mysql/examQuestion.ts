@@ -1,7 +1,7 @@
 // nextjs
 import { revalidateTag } from "next/cache";
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // types
 import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
 import {
@@ -24,7 +24,9 @@ export async function GetExamQuestion(
     const page = searchParams.page;
     const limit = searchParams.limit;
     const keyword = searchParams.keyword;
-    const id_exam = searchParams.id_exam;
+    const id_exam = !isNaN(parseInt(searchParams.id_exam ?? "0"))
+      ? parseInt(searchParams.id_exam)
+      : 0;
 
     // -- where clause --
     const whereClause: ExamQuestionWhereType = {
@@ -38,9 +40,7 @@ export async function GetExamQuestion(
     };
     // AND
     if (id_exam) {
-      whereClause.id_exam = !isNaN(parseInt(id_exam ?? "0"))
-        ? parseInt(id_exam)
-        : 0;
+      whereClause.id_exam = id_exam;
     }
 
     // -- pagination --
@@ -57,6 +57,9 @@ export async function GetExamQuestion(
       where: {
         ...whereClause,
         deleted_by: 0,
+      },
+      orderBy: {
+        created_date: "asc",
       },
       ...paginationParam,
     });

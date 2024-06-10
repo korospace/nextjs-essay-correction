@@ -32,6 +32,7 @@ model User {
   deleted_by    Int      @default(0)
   deleted_date  DateTime?
   exam_member   ExamMember[]
+  exam_answer   ExamAnswer[]
 
   @@map("user")
 }
@@ -81,7 +82,7 @@ model Exam {
   updated_date  DateTime?
   deleted_by    Int       @default(0)
   deleted_date  DateTime?
-  course        Course @relation(fields: [id_course], references: [id_course])
+  course        Course    @relation(fields: [id_course], references: [id_course])
   exam_member   ExamMember[]
   exam_question ExamQuestion[]
 
@@ -95,14 +96,16 @@ model ExamMember {
   start_date      DateTime?
   end_date        DateTime?
   status          ExamStatus  @default(NOT_YET)
+  score           Int?
+  grade           String?
   created_by      Int         @default(0)
   created_date    DateTime    @default(now())
   updated_by      Int         @default(0)
   updated_date    DateTime?
   deleted_by      Int         @default(0)
   deleted_date    DateTime?
-  exam            Exam @relation(fields: [id_exam], references: [id_exam])
-  user            User @relation(fields: [id_user], references: [id_user])
+  exam            Exam        @relation(fields: [id_exam], references: [id_exam])
+  user            User        @relation(fields: [id_user], references: [id_user])
 
   @@map("exam_member")
 }
@@ -118,22 +121,36 @@ model ExamQuestion {
   updated_date      DateTime?
   deleted_by        Int         @default(0)
   deleted_date      DateTime?
-  exam              Exam @relation(fields: [id_exam], references: [id_exam])
+  exam              Exam        @relation(fields: [id_exam], references: [id_exam])
+  exam_answer       ExamAnswer[]
 
   @@map("exam_question")
 }
 
-// model ExamAnswer {
-//   id_exam_answer    BigInt      @id @default(autoincrement())
-//   id_exam_question  Int
-//   id_user           Int
-//   answer            String      @db.MediumText
-//   created_by        Int         @default(0)
-//   created_date      DateTime    @default(now())
-//   updated_by        Int         @default(0)
-//   updated_date      DateTime?
-//   deleted_by        Int         @default(0)
-//   deleted_date      DateTime?
+model ExamAnswer {
+  id_exam_answer       BigInt        @id @default(autoincrement())
+  id_exam_question     Int
+  id_user              Int
+  answer               String        @db.MediumText @default("")
+  answer_cleaning      String        @db.Text @default("")
+  answer_stemming      String        @db.Text @default("")
+  answer_stopword      String        @db.Text @default("")
+  answer_ngram         String        @db.Text @default("")
+  answer_key           String        @db.MediumText @default("")
+  answer_key_cleaning  String        @db.Text @default("")
+  answer_key_stemming  String        @db.Text @default("")
+  answer_key_stopword  String        @db.Text @default("")
+  answer_key_ngram     String        @db.Text @default("")
+  similiariy_matrix    String        @db.Text @default("")
+  max_simmatrix        String        @db.Text @default("")
+  created_by           Int           @default(0)
+  created_date         DateTime      @default(now())
+  updated_by           Int           @default(0)
+  updated_date         DateTime?
+  deleted_by           Int           @default(0)
+  deleted_date         DateTime?
+  exam_question        ExamQuestion  @relation(fields: [id_exam_question], references: [id_exam_question])
+  user                 User          @relation(fields: [id_user], references: [id_user])
 
-//   @@map("exam_answer")
-// }
+  @@map("exam_answer")
+}

@@ -1,7 +1,7 @@
 // nextjs
 import { revalidateTag } from "next/cache";
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // types
 import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
 import {
@@ -9,8 +9,11 @@ import {
   ExamMemberSearchParamType,
   ExamMemberStatuUpdateType,
   ExamMemberWhereType,
+  ExamResultSearchParamType,
   PaginationOptionsType,
 } from "@/lib/types/InputTypes";
+// services
+import { GetExamResult } from "./examResult";
 
 /**
  * Get Exam Member
@@ -25,8 +28,12 @@ export async function GetExamMember(
     const page = searchParams.page;
     const limit = searchParams.limit;
     const keyword = searchParams.keyword;
-    const id_exam = searchParams.id_exam;
-    const id_user = searchParams.id_user;
+    const id_exam = !isNaN(parseInt(searchParams.id_exam ?? "0"))
+      ? parseInt(searchParams.id_exam)
+      : 0;
+    const id_user = !isNaN(parseInt(searchParams.id_user ?? "0"))
+      ? parseInt(searchParams.id_user)
+      : 0;
 
     // -- where clause --
     const whereClause: ExamMemberWhereType = {
@@ -42,15 +49,10 @@ export async function GetExamMember(
     };
     // AND
     if (id_exam) {
-      whereClause.id_exam = !isNaN(parseInt(id_exam ?? "0"))
-        ? parseInt(id_exam)
-        : 0;
+      whereClause.id_exam = id_exam;
     }
     if (id_user) {
-      if (
-        session.user.id_user_role === 3 &&
-        parseInt(id_user) != session.user.id_user
-      ) {
+      if (session.user.id_user_role === 3 && id_user != session.user.id_user) {
         whereClause.user.id_user = 0; // not found
       } else {
         whereClause.user.id_user = id_user;
@@ -74,6 +76,9 @@ export async function GetExamMember(
       },
       include: {
         user: true,
+      },
+      orderBy: {
+        id_exam_member: "desc",
       },
       ...paginationParam,
     });
@@ -234,6 +239,26 @@ export async function UpdateExamMemberStatus(
           message: "the member is not take exam at all",
         };
       } else {
+        // -- get exam result --
+        let newScore = 0;
+        let newGrade = "";
+        if (dataInput.status === "COMPLETED") {
+          const examSearch: ExamResultSearchParamType = {
+            id_exam: checkExist.id_exam.toString(),
+            id_user: checkExist.id_user.toString(),
+          };
+
+          const dtResult = await GetExamResult(examSearch, session);
+
+          if (dtResult.status === false) {
+            return dtResult;
+          } else {
+            newScore = dtResult.data.grade.score;
+            newGrade = dtResult.data.grade.grade;
+          }
+        }
+
+        // -- update exam member --
         const examMember = await prisma.examMember.update({
           data: {
             start_date:
@@ -246,6 +271,10 @@ export async function UpdateExamMemberStatus(
                 : dataInput.status === "ON_GOING"
                 ? null
                 : checkExist.end_date,
+            score:
+              dataInput.status === "COMPLETED" ? newScore : checkExist.score,
+            grade:
+              dataInput.status === "COMPLETED" ? newGrade : checkExist.grade,
             status: dataInput.status,
             updated_by: session.user.id_user,
             updated_date: new Date(),

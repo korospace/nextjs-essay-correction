@@ -2,8 +2,11 @@
 import { useEffect, useRef, useState } from "react";
 // external lib
 import { Icon } from "@iconify/react/dist/iconify.js";
+import "react-quill/dist/quill.snow.css";
+import ReactQuill from "react-quill";
 import toast from "react-hot-toast";
-// components
+// helpers
+import { cleanText } from "@/lib/helpers/helpers";
 // types
 import { InvalidFieldType } from "@/lib/types/ComponentTypes";
 import { ExamQuestionType, ExamType } from "@/lib/types/ResultTypes";
@@ -37,10 +40,18 @@ export default function ExamQuestionForm({
 
   // -- Use State --
   const [loadingForm, setLoadingForm] = useState<boolean>(false);
+  const [questionValue, setQuestionValue] = useState<string>("");
+  const [answerValue, setAnswerValue] = useState<string>("");
   const [questionInvalid, setQuestionInvalid] = useState<InvalidFieldType>();
   const [answerKeyInvalid, setAnswerKeyInvalid] = useState<InvalidFieldType>();
 
   // -- Use effect --
+  useEffect(() => {
+    if (dtQuestion) {
+      setQuestionValue(dtQuestion.question);
+      setAnswerValue(dtQuestion.answer_key);
+    }
+  }, [dtQuestion]);
 
   // -- Functions --
   const handleSubmit = async (e: any) => {
@@ -51,18 +62,18 @@ export default function ExamQuestionForm({
     setAnswerKeyInvalid({ invalid: false, message: "" });
 
     // value
-    const question = e.target.question.value;
-    const answer_key = e.target.answer_key.value;
+    const question = questionValue;
+    const answer_key = answerValue;
 
     // validation empty
-    if (question == "")
+    if (cleanText(question) == "")
       setQuestionInvalid({ invalid: true, message: "question cant be empty" });
-    if (answer_key == "")
+    if (cleanText(answer_key) == "")
       setAnswerKeyInvalid({
         invalid: true,
         message: "answer key cant be empty",
       });
-    if (question == "" || answer_key == "") return;
+    if (cleanText(question) == "" || cleanText(answer_key) == "") return;
 
     // build payload
     const httpApiPath: string =
@@ -92,7 +103,8 @@ export default function ExamQuestionForm({
       if (dtQuestion) {
         onCancle();
       } else {
-        e.target.reset();
+        setQuestionValue("");
+        setAnswerValue("");
       }
     } else {
       if (res.message === "validation failed") {
@@ -133,20 +145,19 @@ export default function ExamQuestionForm({
             <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
               Question
             </label>
-            <textarea
-              rows={6}
-              name="question"
-              defaultValue={dtQuestion?.question}
-              placeholder="Input question"
-              className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+            <ReactQuill
+              theme="snow"
+              value={questionValue}
+              onChange={(value: string) => {
+                setQuestionValue(value);
+                setQuestionInvalid({ invalid: false, message: "" });
+              }}
+              className={`w-full max-w-lg p-1 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
                 questionInvalid?.invalid
                   ? "bg-red-300 border-red-600 text-red-700"
                   : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
               }`}
-              onChange={() =>
-                setQuestionInvalid({ invalid: false, message: "" })
-              }
-            ></textarea>
+            />
             {questionInvalid?.invalid && (
               <p className="mt-2 text-sm text-red-600">
                 {questionInvalid.message}
@@ -159,20 +170,19 @@ export default function ExamQuestionForm({
             <label className="block mb-2 text-sm font-medium text-budiluhur-700/80">
               Answer Key
             </label>
-            <textarea
-              rows={6}
-              name="answer_key"
-              defaultValue={dtQuestion?.answer_key}
-              placeholder="Input answer ket"
-              className={`w-full max-w-lg p-2.5 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
-                answerKeyInvalid?.invalid
+            <ReactQuill
+              theme="snow"
+              value={answerValue}
+              onChange={(value: string) => {
+                setAnswerValue(value);
+                setAnswerKeyInvalid({ invalid: false, message: "" });
+              }}
+              className={`w-full max-w-lg p-1 block placeholder-budiluhur-700/50 text-md outline-none rounded-md border ${
+                questionInvalid?.invalid
                   ? "bg-red-300 border-red-600 text-red-700"
                   : "bg-budiluhur-300 border-budiluhur-600 text-budiluhur-700"
               }`}
-              onChange={() =>
-                setAnswerKeyInvalid({ invalid: false, message: "" })
-              }
-            ></textarea>
+            />
             {answerKeyInvalid?.invalid && (
               <p className="mt-2 text-sm text-red-600">
                 {answerKeyInvalid.message}

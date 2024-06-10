@@ -36,7 +36,10 @@ export default function DialogComponent({
         {/* body */}
         <div className="mb-12 text-budiluhur-700">
           <h3 className="mb-3 text-2xl font-bold">{title}</h3>
-          <p className="font-light">{message}</p>
+          <div
+            className="font-light"
+            dangerouslySetInnerHTML={{ __html: message }}
+          />
         </div>
 
         {/* footer */}

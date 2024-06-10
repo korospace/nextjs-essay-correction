@@ -1,7 +1,7 @@
 // nextjs
 import { revalidateTag } from "next/cache";
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // helpers
 import { HashText } from "@/lib/helpers/helpers";
 // types
@@ -27,6 +27,9 @@ export async function GetUser(
       where: {
         ...searchParam,
         deleted_by: 0,
+      },
+      orderBy: {
+        id_user: "desc",
       },
       ...PaginationOptionsType,
     });

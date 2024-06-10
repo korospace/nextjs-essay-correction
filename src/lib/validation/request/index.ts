@@ -4,6 +4,20 @@ import { z } from "zod";
 import { DateFormating } from "@/lib/helpers/helpers";
 
 /**
+ * Training
+ * ------------------------------------------
+ */
+export const TrainingInputValidation = z.object({
+  answer: z
+    .string()
+    .max(16700000, "Answer cannot be more than 16700000 characters"),
+  answer_key: z
+    .string()
+    .max(16700000, "Answer cannot be more than 16700000 characters"),
+  expectation_grade: z.string(),
+});
+
+/**
  * User
  * ------------------------------------------
  */
@@ -23,7 +37,7 @@ export const UserInputValidation = z.object({
 });
 
 export const UserUpdateValidation = z.object({
-  id_user: z.number(),
+  id_user: z.number().optional(),
   username: z
     .string()
     .min(5, "Username must be at least 5 characters long")
@@ -105,10 +119,10 @@ export const ExamQuestionInputValidation = z.object({
   id_exam: z.number(),
   question: z
     .string()
-    .max(1000, "Question cannot be more than 1000 characters"),
+    .max(65000, "Question cannot be more than 65000 characters"),
   answer_key: z
     .string()
-    .max(1000, "Answer key cannot be more than 1000 characters"),
+    .max(65000, "Answer key cannot be more than 65000 characters"),
 });
 
 export const ExamQuestionUpdateValidation = z.object({
@@ -116,10 +130,10 @@ export const ExamQuestionUpdateValidation = z.object({
   id_exam: z.number(),
   question: z
     .string()
-    .max(1000, "Question cannot be more than 1000 characters"),
+    .max(65000, "Question cannot be more than 65000 characters"),
   answer_key: z
     .string()
-    .max(1000, "Answer key cannot be more than 1000 characters"),
+    .max(16700000, "Answer key cannot be more than 16700000 characters"),
 });
 
 /**
@@ -134,4 +148,16 @@ export const ExamMemberInputValidation = z.object({
 export const ExamMemberStatusUpdateValidation = z.object({
   id_exam_member: z.number(),
   status: z.enum(["NOT_YET", "ON_GOING", "COMPLETED"]),
+});
+
+/**
+ * Exam Answer
+ * ------------------------------------------
+ */
+export const ExamAnswerInputValidation = z.object({
+  id_exam_question: z.number(),
+  id_user: z.number(),
+  answer: z
+    .string()
+    .max(16700000, "Answer cannot be more than 16700000 characters"),
 });

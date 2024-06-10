@@ -116,7 +116,10 @@ export default function AdminPage() {
         <SearchbarComponent
           placeholder="Search teacher username / full name"
           showBtnAdd={true}
-          searchOnEnter={(keyword) => setKeyword(keyword)}
+          searchOnEnter={(keyword) => {
+            setKeyword(keyword);
+            setPage(1);
+          }}
           btnOnClick={() => setShowForm(true)}
         />
 

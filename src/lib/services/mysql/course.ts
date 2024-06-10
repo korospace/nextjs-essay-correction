@@ -1,7 +1,7 @@
 // nextjs
 import { revalidateTag } from "next/cache";
 // prisma
-import { prisma } from "@/lib/db/prisma";
+import { prisma } from "@/lib/db/init";
 // types
 import {
   CourseInputType,
@@ -23,6 +23,9 @@ export async function GetCourse(
       where: {
         ...searchParam,
         deleted_by: 0,
+      },
+      orderBy: {
+        id_course: "desc",
       },
       ...PaginationOptionsType,
     });

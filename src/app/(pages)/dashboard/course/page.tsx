@@ -114,7 +114,10 @@ export default function CoursePage() {
         <SearchbarComponent
           placeholder="Search course name"
           showBtnAdd={true}
-          searchOnEnter={(keyword) => setKeyword(keyword)}
+          searchOnEnter={(keyword) => {
+            setKeyword(keyword);
+            setPage(1);
+          }}
           btnOnClick={() => setShowForm(true)}
         />
 

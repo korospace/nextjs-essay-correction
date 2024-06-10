@@ -58,7 +58,7 @@ export default function ExamStatusComponent({
 
   return (
     <span
-      className={`inline-flex items-center rounded px-2 py-1 text-xs font-medium ring-1 ring-inset ${tailwindStatusClass(
+      className={`min-w-max inline-flex items-center rounded px-2 py-1 text-xs font-medium ring-1 ring-inset ${tailwindStatusClass(
         examMember ? examMember.status ?? "" : ""
       )}`}
     >

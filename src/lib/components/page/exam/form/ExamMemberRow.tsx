@@ -8,6 +8,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { ExamMemberType, ExamType } from "@/lib/types/ResultTypes";
 // components
 import ExamStatusComponent from "../ExamStatusComponent";
+// helpers
+import { DateFormating } from "@/lib/helpers/helpers";
 
 /**
  * Props
@@ -15,7 +17,7 @@ import ExamStatusComponent from "../ExamStatusComponent";
  */
 type Props = {
   apiPath: string;
-  dtGeneralInfo: ExamType | undefined;
+  dtGeneralInfo: ExamType;
   dtMember: ExamMemberType;
   no: number;
   onDelete: (dtMember: ExamMemberType) => void;
@@ -30,6 +32,14 @@ export default function ExamMemberRow({
   onDelete,
   reOpen,
 }: Props) {
+  // -- Function --
+  const checkExamEndDate = (endDate: string): boolean => {
+    const unixEndDate = DateFormating.toUnixTimeStamp(endDate);
+    const unixNow = DateFormating.toUnixTimeStamp(new Date().toString());
+
+    return unixEndDate < unixNow;
+  };
+
   return (
     <Fragment>
       <tr className="border-b border-budiluhur-700 bg-budiluhur-300">
@@ -42,25 +52,35 @@ export default function ExamMemberRow({
             examMember={dtMember}
           />
         </td>
+        <td className="px-6 py-4 align-top">
+          {dtMember.score ?? "__"} / {dtMember.grade ?? "__"}
+        </td>
         <td className="px-6 py-4 flex gap-2 justify-end">
-          <Link
-            target="_blank"
-            href={"/exam/" + dtGeneralInfo?.id_exam + "/" + dtMember.id_user}
-            className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
-          >
-            <Icon icon="mdi:eye" />
-          </Link>
+          {dtMember.status !== "NOT_YET" && dtMember.status !== "ON_GOING" && (
+            <button
+              onClick={() => reOpen(dtMember)}
+              className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
+            >
+              <Icon icon="octicon:issue-reopened-24" />
+            </button>
+          )}
+
+          {(dtMember.status === "COMPLETED" ||
+            checkExamEndDate(dtGeneralInfo.end_date)) && (
+            <Link
+              target="_blank"
+              href={"/exam/" + dtGeneralInfo?.id_exam + "/" + dtMember.id_user}
+              className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
+            >
+              <Icon icon="mdi:eye" />
+            </Link>
+          )}
+
           <button
             onClick={() => onDelete(dtMember)}
             className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
           >
             <Icon icon="hugeicons:delete-01" />
-          </button>
-          <button
-            onClick={() => reOpen(dtMember)}
-            className="inline-block items-center py-2 px-3 text-md font-medium focus:outline-none bg-budiluhur-700 rounded hover:bg-budiluhur-700/80 focus:bg-budiluhur-700/80 hover:text-budiluhur-300 text-budiluhur-400 focus:text-budiluhur-400/80"
-          >
-            <Icon icon="octicon:issue-reopened-24" />
           </button>
         </td>
       </tr>

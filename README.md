@@ -73,3 +73,21 @@ $ npm i next@14.2.0 eslint-config-next@14.2.0
    // generate table from model
    $ yarn prisma migrate dev
    ```
+
+```
+// if (ak_stopword.arr && a_stopword.arr) {
+      //   const percentile = 55; // Ubah sesuai kebutuhan
+      //   const ak_length = ak_stopword.arr.length;
+      //   const a_length = a_stopword.arr.length;
+
+      //   // Hitung nilai persentil untuk kunci jawaban dan jawaban
+      //   const ak_percentile = Math.ceil(ak_length * (percentile / 100));
+      //   const a_percentile = Math.ceil(a_length * (percentile / 100));
+
+      //   // Tentukan nilai n-gram berdasarkan nilai persentil
+      //   nGramValue = Math.max(
+      //     Math.floor((ak_percentile + a_percentile) / 2),
+      //     1
+      //   );
+      // }
+```

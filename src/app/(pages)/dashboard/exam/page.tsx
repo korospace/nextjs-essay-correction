@@ -87,6 +87,8 @@ export default function ExamPage() {
     if (res.status == false) {
       toast.error(res.message);
     } else {
+      console.log(res.data.data);
+
       setExamList(res.data.data);
       setTotalRow(res.data.totalRow);
       setTotalPage(res.data.totalPage);
@@ -134,7 +136,10 @@ export default function ExamPage() {
             className="flex-1"
             placeholder="Search exam title"
             showBtnAdd={[1, 2].includes(dataSession?.user.id_user_role ?? 0)}
-            searchOnEnter={(keyword) => setKeyword(keyword)}
+            searchOnEnter={(keyword) => {
+              setKeyword(keyword);
+              setPage(1);
+            }}
             btnOnClick={() => router.push("/dashboard/exam/create")}
           />
         </div>
