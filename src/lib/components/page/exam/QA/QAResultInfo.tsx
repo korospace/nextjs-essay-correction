@@ -68,7 +68,7 @@ export default function QAResultInfo({
               <b>Score</b>
             </td>
             <td className="pl-1 pr-3">:</td>
-            <td>{Math.round(score)}</td>
+            <td>{score ? parseFloat(score.toFixed(2)) : 0}</td>
           </tr>
           {wrong && (
             <tr key="wrong">

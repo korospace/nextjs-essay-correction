@@ -96,7 +96,7 @@ model ExamMember {
   start_date      DateTime?
   end_date        DateTime?
   status          ExamStatus  @default(NOT_YET)
-  score           Int?
+  score           Float?
   grade           String?
   created_by      Int         @default(0)
   created_date    DateTime    @default(now())
@@ -131,18 +131,18 @@ model ExamAnswer {
   id_exam_answer       BigInt        @id @default(autoincrement())
   id_exam_question     Int
   id_user              Int
-  answer               String        @db.MediumText @default("")
-  answer_cleaning      String        @db.Text @default("")
-  answer_stemming      String        @db.Text @default("")
-  answer_stopword      String        @db.Text @default("")
-  answer_ngram         String        @db.Text @default("")
-  answer_key           String        @db.MediumText @default("")
-  answer_key_cleaning  String        @db.Text @default("")
-  answer_key_stemming  String        @db.Text @default("")
-  answer_key_stopword  String        @db.Text @default("")
-  answer_key_ngram     String        @db.Text @default("")
-  similiariy_matrix    String        @db.Text @default("")
-  max_simmatrix        String        @db.Text @default("")
+  answer               String        @db.MediumText
+  answer_cleaning      String        @db.Text
+  answer_stemming      String        @db.Text
+  answer_stopword      String        @db.Text
+  answer_ngram         String        @db.Text
+  answer_key           String        @db.MediumText
+  answer_key_cleaning  String        @db.Text
+  answer_key_stemming  String        @db.Text
+  answer_key_stopword  String        @db.Text
+  answer_key_ngram     String        @db.Text
+  similiariy_matrix    String        @db.MediumText
+  max_simmatrix        String        @db.Text
   created_by           Int           @default(0)
   created_date         DateTime      @default(now())
   updated_by           Int           @default(0)

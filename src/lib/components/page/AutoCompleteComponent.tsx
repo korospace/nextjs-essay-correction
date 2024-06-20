@@ -45,7 +45,6 @@ export default function AutoCompleteComponent({
   // -- Use Effect --
   useEffect(() => {
     setAcValue(value);
-    console.log(value);
   }, [value]);
   useEffect(() => {
     const handleClickOutside = (event: any) => {

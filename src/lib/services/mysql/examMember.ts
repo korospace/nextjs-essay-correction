@@ -44,6 +44,11 @@ export async function GetExamMember(
               contains: keyword,
             },
           },
+          {
+            full_name: {
+              contains: keyword,
+            },
+          },
         ],
       },
     };
@@ -272,7 +277,9 @@ export async function UpdateExamMemberStatus(
                 ? null
                 : checkExist.end_date,
             score:
-              dataInput.status === "COMPLETED" ? newScore : checkExist.score,
+              dataInput.status === "COMPLETED"
+                ? parseFloat(newScore.toFixed(2))
+                : checkExist.score,
             grade:
               dataInput.status === "COMPLETED" ? newGrade : checkExist.grade,
             status: dataInput.status,

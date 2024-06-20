@@ -66,6 +66,11 @@ export async function GetExamAnswer(
       where: {
         ...whereClause,
       },
+      orderBy: {
+        exam_question: {
+          created_date: "asc",
+        },
+      },
       ...paginationParam,
     });
 
@@ -119,7 +124,6 @@ export async function SaveExamAnswer(
     if (dtAllow.status === false) {
       return dtAllow;
     }
-    console.log(dtAllow);
 
     // -- check exam answer exist
     const dtExamAnswerExist = await prisma.examAnswer.findFirst({
@@ -145,15 +149,16 @@ export async function SaveExamAnswer(
           id_exam_question: dataInput.id_exam_question,
           id_user: dataInput.id_user,
           answer: dataInput.answer,
-          answer_cleaning: dtTrainingDetail.answer.cleaned,
-          answer_stemming: dtTrainingDetail.answer.stemmed,
-          answer_stopword: dtTrainingDetail.answer.stopword_removed,
-          answer_ngram: dtTrainingDetail.answer.n_gram,
-          answer_key: dtTrainingDetail.answer_key.raw_value,
-          answer_key_cleaning: dtTrainingDetail.answer_key.cleaned,
-          answer_key_stemming: dtTrainingDetail.answer_key.stemmed,
-          answer_key_stopword: dtTrainingDetail.answer_key.stopword_removed,
-          answer_key_ngram: dtTrainingDetail.answer_key.n_gram,
+          answer_cleaning: dtTrainingDetail.answer.cleaned || "",
+          answer_stemming: dtTrainingDetail.answer.stemmed || "",
+          answer_stopword: dtTrainingDetail.answer.stopword_removed || "",
+          answer_ngram: dtTrainingDetail.answer.n_gram || "",
+          answer_key: dtTrainingDetail.answer_key.raw_value || "",
+          answer_key_cleaning: dtTrainingDetail.answer_key.cleaned || "",
+          answer_key_stemming: dtTrainingDetail.answer_key.stemmed || "",
+          answer_key_stopword:
+            dtTrainingDetail.answer_key.stopword_removed || "",
+          answer_key_ngram: dtTrainingDetail.answer_key.n_gram || "",
           similiariy_matrix: dtTrainingDetail.similiarity_matrix,
           max_simmatrix: dtTrainingDetail.max_simmatrix,
           created_by: session.user.id_user_role,

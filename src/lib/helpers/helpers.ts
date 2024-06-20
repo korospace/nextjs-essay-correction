@@ -148,13 +148,26 @@ export const extractDataFromExcel = async (
   const keys = jsonData[0];
   const rows = jsonData.slice(1).map((row: any[]) => {
     const obj: any = {};
+    let hasValidData = false;
+
     keys.forEach((key: string, index: number) => {
-      obj[key] = row[index];
+      if (
+        row[index] !== undefined &&
+        row[index] !== null &&
+        row[index] !== ""
+      ) {
+        obj[key] = row[index];
+        hasValidData = true;
+      }
     });
-    return obj;
+
+    return hasValidData ? obj : null;
   });
 
-  return rows;
+  // Filter out any null values from rows
+  const filteredRows = rows.filter((row: any) => row !== null);
+
+  return filteredRows;
 };
 
 export const readFileAsBuffer = async (file: File): Promise<Buffer> => {
@@ -201,8 +214,10 @@ export const cleanText = (text: string) => {
   cleanedText = cleanedText.replace(/\s+/g, " ");
   // Menghapus spasi di awal dan akhir
   cleanedText = cleanedText.trim();
-  // Scafolding
+  // Mengubah teks menjadi huruf kecil
   cleanedText = cleanedText.toLowerCase();
+  // Menghapus semua tanda baca
+  cleanedText = cleanedText.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
 
   return cleanedText;
 };

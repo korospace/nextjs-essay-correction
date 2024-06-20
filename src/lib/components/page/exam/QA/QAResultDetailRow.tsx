@@ -82,7 +82,54 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                   <b>Score</b>
                 </td>
                 <td className="pl-1 pr-3">:</td>
-                <td>{Math.round(dtTrainingDetail.grade.score)}</td>
+                <td>
+                  {dtTrainingDetail.grade.score
+                    ? parseFloat(dtTrainingDetail.grade.score.toFixed(2))
+                    : 0}
+                </td>
+              </tr>
+            </table>
+
+            {/* answer key */}
+            <h1 className="mt-5 text-lg font-extralight">Answer Key </h1>
+            <div className="mt-1 mb-2">
+              <Divider className="bg-budiluhur-700 opacity-50" />
+            </div>
+            <table className="text-sm">
+              <tr>
+                <td className="align-top min-w-[138px]">
+                  <b>Raw</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>{dtTrainingDetail.answer_key?.raw_value}</td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <b>Cleaned</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>{dtTrainingDetail.answer_key?.cleaned}</td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <b>Stemmed</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>{dtTrainingDetail.answer_key?.stemmed}</td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <b>Stopword Removed</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>{dtTrainingDetail.answer_key?.stopword_removed}</td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <b>NGram</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>{dtTrainingDetail.answer_key.n_gram}</td>
               </tr>
             </table>
 
@@ -120,41 +167,12 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                 <td className="align-top pl-1 pr-3">:</td>
                 <td>{dtTrainingDetail.answer.stopword_removed}</td>
               </tr>
-            </table>
-
-            {/* answer key */}
-            <h1 className="mt-5 text-lg font-extralight">Answer Key </h1>
-            <div className="mt-1 mb-2">
-              <Divider className="bg-budiluhur-700 opacity-50" />
-            </div>
-            <table className="text-sm">
-              <tr>
-                <td className="align-top min-w-[138px]">
-                  <b>Raw</b>
-                </td>
-                <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.raw_value}</td>
-              </tr>
               <tr>
                 <td className="align-top">
-                  <b>Cleaned</b>
+                  <b>NGram</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.cleaned}</td>
-              </tr>
-              <tr>
-                <td className="align-top">
-                  <b>Stemmed</b>
-                </td>
-                <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.stemmed}</td>
-              </tr>
-              <tr>
-                <td className="align-top">
-                  <b>Stopword Removed</b>
-                </td>
-                <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.stopword_removed}</td>
+                <td>{dtTrainingDetail.answer.n_gram}</td>
               </tr>
             </table>
           </div>

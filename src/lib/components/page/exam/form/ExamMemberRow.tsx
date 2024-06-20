@@ -53,7 +53,8 @@ export default function ExamMemberRow({
           />
         </td>
         <td className="px-6 py-4 align-top">
-          {dtMember.score ?? "__"} / {dtMember.grade ?? "__"}
+          {dtMember.score ? parseFloat(dtMember.score.toFixed(2)) : "__"} /{" "}
+          {dtMember.grade ?? "__"}
         </td>
         <td className="px-6 py-4 flex gap-2 justify-end">
           {dtMember.status !== "NOT_YET" && dtMember.status !== "ON_GOING" && (

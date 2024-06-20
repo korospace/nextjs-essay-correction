@@ -39,7 +39,7 @@ export const EssayCorrection = {
 
     const words = sastrawiTokenizer.tokenize(text);
 
-    for (const word of words) {
+    for (const word of text.split(" ")) {
       stemmed.push(sastrawiStemmer.stem(word));
     }
 
@@ -98,10 +98,6 @@ export const EssayCorrection = {
     if (synonym == null) {
       return false;
     } else {
-      console.log(word1, word2);
-
-      console.log(synonym.includes(word2));
-
       return synonym.includes(word2);
     }
   },
@@ -200,18 +196,21 @@ export const EssayCorrection = {
 
     // looping question & answer
     for (let iteration = 0; iteration < data.length; iteration++) {
-      const nGramValue = 5;
+      const nGramValue = 2;
       const row = data[iteration];
 
       // -- pre process
       let ak_cleaned = EC.cleanText(row.answer_key);
       let ak_stemmed = EC.stemmingSastrawi(ak_cleaned);
-      let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
-      let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
+      // let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
+      // let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
+      let ak_ngram = EC.nGram(ak_stemmed.arr ?? [], nGramValue);
       let a_cleaned = EC.cleanText(row.answer);
       let a_stemmed = EC.stemmingSastrawi(a_cleaned);
-      let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
-      let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
+      // let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
+      // let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
+      let a_ngram = EC.nGram(a_stemmed.arr ?? [], nGramValue);
+      // -- Menghitung skor urutan kalimat
 
       // -- similarity matrix
       const similarityMatrix = await EC.simMatrix(
@@ -259,14 +258,16 @@ export const EssayCorrection = {
           raw_value: row.answer,
           cleaned: a_cleaned,
           stemmed: a_stemmed.str,
-          stopword_removed: a_stopword.str,
+          // stopword_removed: a_stopword.str,
+          stopword_removed: "",
           n_gram: a_ngram.str,
         },
         answer_key: {
           raw_value: row.answer_key,
           cleaned: ak_cleaned,
           stemmed: ak_stemmed.str,
-          stopword_removed: ak_stopword.str,
+          // stopword_removed: ak_stopword.str,
+          stopword_removed: "",
           n_gram: ak_ngram.str,
         },
       };
@@ -306,15 +307,17 @@ export const EssayCorrection = {
       let a_stopword = row.answer.stopword_removed;
       let a_ngram = row.answer.n_gram;
 
-      // -- max similarity between each word
-      const maxSimilarity = row.max_simmatrix
-        ? JSON.parse(row.max_simmatrix)
-        : [];
+      let resultLevPercentage = 0;
+      let resultLevGrade = "E";
 
-      // -- Hitung nilai kesamaan rata-rata
-      const resultLev = EC.resultLev(maxSimilarity);
-      const resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
-      const resultLevGrade = EC.grading(resultLevPercentage);
+      if (row.answer.raw_value) {
+        // -- max similarity between each word
+        const maxSimilarity = JSON.parse(row.max_simmatrix);
+        // -- Hitung nilai kesamaan rata-rata
+        const resultLev = EC.resultLev(maxSimilarity);
+        resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
+        resultLevGrade = EC.grading(resultLevPercentage);
+      }
 
       // -- average score
       averageScore =

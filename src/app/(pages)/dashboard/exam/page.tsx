@@ -87,8 +87,6 @@ export default function ExamPage() {
     if (res.status == false) {
       toast.error(res.message);
     } else {
-      console.log(res.data.data);
-
       setExamList(res.data.data);
       setTotalRow(res.data.totalRow);
       setTotalPage(res.data.totalPage);
