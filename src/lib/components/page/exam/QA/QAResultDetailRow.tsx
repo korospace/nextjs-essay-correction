@@ -6,6 +6,8 @@ import { Divider } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 // types
 import { TrainingDetailType } from "@/lib/types/ResultTypes";
+// components
+import StrToBadges from "../../StrToBadges";
 
 /**
  * Props
@@ -22,6 +24,26 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
 
   // -- Use State --
   const [showDetail, setShowDetail] = useState<boolean>(false);
+
+  // -- Functions --
+  const isMaxValueInRow = (
+    MaxSimiliarity: number[],
+    rowIndex: number,
+    value: number
+  ): boolean => {
+    return MaxSimiliarity[rowIndex] === value;
+  };
+
+  const sumMaxSimiliarity = (values: number[]): number => {
+    return values.reduce((acc, val) => acc + val, 0);
+  };
+
+  const sumSimiliarity = (values: number[]): number => {
+    const totalMaxRowValue = values.reduce((acc, val) => acc + val, 0);
+    const totalRows = values.length;
+    const sum = 100 - (totalMaxRowValue / totalRows) * 100;
+    return parseFloat(sum.toFixed(2));
+  };
 
   return (
     <Fragment>
@@ -108,28 +130,56 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                   <b>Cleaned</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.cleaned}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer_key?.cleaned ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>Stemmed</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.stemmed}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer_key?.stemmed ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>Stopword Removed</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key?.stopword_removed}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer_key?.stopword_removed ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>NGram</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer_key.n_gram}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer_key?.n_gram ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
             </table>
 
@@ -151,30 +201,197 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                   <b>Cleaned</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer.cleaned}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer.cleaned ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>Stemmed</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer.stemmed}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer.stemmed ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>Stopword Removed</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer.stopword_removed}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer.stopword_removed ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
               <tr>
                 <td className="align-top">
                   <b>NGram</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
-                <td>{dtTrainingDetail.answer.n_gram}</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer.n_gram ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
               </tr>
             </table>
+
+            {/* Levenshtein Distance - Matrix Table */}
+            <h1 className="mt-5 text-lg font-extralight">
+              Levenshtein Distance - Matrix Table
+            </h1>
+            {dtTrainingDetail.answer.n_gram &&
+              dtTrainingDetail.answer_key.n_gram && (
+                <div className="max-w-5xl overflow-x-auto">
+                  <table
+                    border={1}
+                    cellPadding="5"
+                    className="mt-2 border border-budiluhur-700/50"
+                  >
+                    <thead>
+                      <tr>
+                        <th className="bg-budiluhur-200"></th>
+                        {dtTrainingDetail.answer.n_gram
+                          .split(" | ")
+                          .map((item, index) => (
+                            <th
+                              key={index}
+                              className={`bg-budiluhur-200 min-w-max whitespace-nowrap overflow-hidden text-ellipsis border-b border-budiluhur-700/50`}
+                            >
+                              {item}
+                            </th>
+                          ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dtTrainingDetail.answer_key.n_gram
+                        ?.split(" | ")
+                        .map((akItem, rowIndex) => (
+                          <tr key={rowIndex} className="bg-budiluhur-200">
+                            <th className="min-w-max whitespace-nowrap overflow-hidden text-ellipsis border-r border-budiluhur-700/50">
+                              {akItem}
+                            </th>
+                            {JSON.parse(dtTrainingDetail.similiarity_matrix)[
+                              rowIndex
+                            ].map((simValue: any, colIndex: any) => (
+                              <>
+                                {isMaxValueInRow(
+                                  JSON.parse(dtTrainingDetail.max_simmatrix),
+                                  rowIndex,
+                                  simValue
+                                ) ? (
+                                  <td
+                                    key={`${rowIndex} | ${colIndex}`}
+                                    className={`bg-yellow-200 text-center border-b border-budiluhur-700/50`}
+                                  >
+                                    {simValue.toFixed(2)}
+                                  </td>
+                                ) : (
+                                  <td
+                                    key={`${rowIndex} | ${colIndex}`}
+                                    className={`${
+                                      (colIndex + 1) % 2 == 1
+                                        ? "bg-budiluhur-100"
+                                        : "bg-budiluhur-200"
+                                    } text-center border-b border-budiluhur-700/50`}
+                                  >
+                                    {simValue.toFixed(2)}
+                                  </td>
+                                )}
+                              </>
+                            ))}
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+            {/* Levenshtein Distance - Maximun Row Value */}
+            <h1 className="mt-5 text-lg font-extralight">
+              Levenshtein Distance - Maximun Row Value
+            </h1>
+            <table
+              border={1}
+              cellPadding="5"
+              className="mt-2 border border-budiluhur-700/50"
+            >
+              {dtTrainingDetail.max_simmatrix && (
+                <>
+                  {JSON.parse(dtTrainingDetail.max_simmatrix).map(
+                    (value: any, rowIndex: any) => (
+                      <tr key={rowIndex}>
+                        <td className="bg-budiluhur-200">row {rowIndex + 1}</td>
+                        <td className="bg-budiluhur-100">{value}</td>
+                      </tr>
+                    )
+                  )}
+                </>
+              )}
+            </table>
+
+            {/* Levenshtein Distance - Similiarity */}
+            <h1 className="mt-5 text-lg font-extralight">
+              Levenshtein Distance - Similiarity
+            </h1>
+            <div className="mt-1 mb-2">
+              <Divider className="bg-budiluhur-700 opacity-50" />
+            </div>
+            <div className="">
+              <div className="flex items-center mb-2">
+                <p className="mr-3">
+                  <Icon icon="pepicons-pop:equal" />
+                </p>
+                <p>100 - ((Total Maximal Row Value / Row Length) * 100)</p>
+              </div>
+
+              <div className="flex items-center mb-2">
+                <p className="mr-3">
+                  <Icon icon="pepicons-pop:equal" />
+                </p>
+                {dtTrainingDetail.max_simmatrix && (
+                  <p>
+                    100 - {"(("}
+                    {sumMaxSimiliarity(
+                      JSON.parse(dtTrainingDetail.max_simmatrix)
+                    )}
+                    {" / "}
+                    {JSON.parse(dtTrainingDetail.max_simmatrix).length}
+                    {") * 100 )"}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center mb-2">
+                <p className="mr-3">
+                  <Icon icon="pepicons-pop:equal" />
+                </p>
+                {dtTrainingDetail.max_simmatrix && (
+                  <p>
+                    {sumSimiliarity(JSON.parse(dtTrainingDetail.max_simmatrix))}{" "}
+                    %
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </td>
       </tr>

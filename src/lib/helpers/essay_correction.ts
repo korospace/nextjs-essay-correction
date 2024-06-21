@@ -133,16 +133,27 @@ export const EssayCorrection = {
     return distance / Math.max(typo1.length - 1, bener1.length - 1);
   },
   simMatrix: async (arr1: string[], arr2: string[]): Promise<number[][]> => {
+    console.log(arr1);
+    console.log(arr2);
+
     // Mengembalikan array matriks kemiripan dari kedua input string
     const similar: number[][] = Array.from({ length: arr1.length }, () =>
       Array.from({ length: arr2.length }, () => 0)
     );
+    console.log(similar);
 
     for (let i = 0; i < arr1.length; i++) {
       for (let j = 0; j < arr2.length; j++) {
+        console.log(i, j);
+
+        console.log(arr1[i]);
+        console.log(arr2[j]);
+
         similar[i][j] = await EssayCorrection.lev(arr1[i], arr2[j]);
+        console.log(similar[i][j]);
       }
     }
+    console.log(similar);
 
     return similar;
   },
@@ -196,20 +207,20 @@ export const EssayCorrection = {
 
     // looping question & answer
     for (let iteration = 0; iteration < data.length; iteration++) {
-      const nGramValue = 2;
+      const nGramValue = 5;
       const row = data[iteration];
 
       // -- pre process
       let ak_cleaned = EC.cleanText(row.answer_key);
       let ak_stemmed = EC.stemmingSastrawi(ak_cleaned);
-      // let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
-      // let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
-      let ak_ngram = EC.nGram(ak_stemmed.arr ?? [], nGramValue);
+      let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
+      let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
+      // let ak_ngram = EC.nGram(ak_stemmed.arr ?? [], nGramValue);
       let a_cleaned = EC.cleanText(row.answer);
       let a_stemmed = EC.stemmingSastrawi(a_cleaned);
-      // let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
-      // let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
-      let a_ngram = EC.nGram(a_stemmed.arr ?? [], nGramValue);
+      let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
+      let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
+      // let a_ngram = EC.nGram(a_stemmed.arr ?? [], nGramValue);
       // -- Menghitung skor urutan kalimat
 
       // -- similarity matrix
@@ -223,6 +234,11 @@ export const EssayCorrection = {
       //   a_stopword.arr ?? []
       // );
 
+      // const similarityMatrix = await EC.simMatrix(
+      //   ["rohaniah mentalitas"] ?? [],
+      //   ["kaya rohaniah"] ?? []
+      // );
+
       // -- max similarity between each word
       const maxSimilarity = EC.maxSim(similarityMatrix);
 
@@ -230,6 +246,11 @@ export const EssayCorrection = {
       const resultLev = EC.resultLev(maxSimilarity);
       const resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
       const resultLevGrade = EC.grading(resultLevPercentage);
+      console.log(ak_ngram.arr);
+      console.log(a_ngram.arr);
+      console.log(similarityMatrix);
+      console.log(maxSimilarity);
+      console.log(resultLev);
 
       // -- expectation counter
       if (row.expectation_grade) {
@@ -256,19 +277,19 @@ export const EssayCorrection = {
         max_simmatrix: JSON.stringify(maxSimilarity),
         answer: {
           raw_value: row.answer,
-          cleaned: a_cleaned,
-          stemmed: a_stemmed.str,
-          // stopword_removed: a_stopword.str,
-          stopword_removed: "",
-          n_gram: a_ngram.str,
+          cleaned: a_cleaned.split(" ").join(" | "),
+          stemmed: a_stemmed.arr?.join(" | "),
+          stopword_removed: a_stopword.arr?.join(" | "),
+          // stopword_removed: "",
+          n_gram: a_ngram.arr?.join(" | "),
         },
         answer_key: {
           raw_value: row.answer_key,
-          cleaned: ak_cleaned,
-          stemmed: ak_stemmed.str,
-          // stopword_removed: ak_stopword.str,
-          stopword_removed: "",
-          n_gram: ak_ngram.str,
+          cleaned: ak_cleaned.split(" ").join(" | "),
+          stemmed: ak_stemmed.arr?.join(" | "),
+          stopword_removed: ak_stopword.arr?.join(" | "),
+          // stopword_removed: "",
+          n_gram: ak_ngram.arr?.join(" | "),
         },
       };
 
