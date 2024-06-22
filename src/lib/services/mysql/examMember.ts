@@ -283,7 +283,8 @@ export async function UpdateExamMemberStatus(
             grade:
               dataInput.status === "COMPLETED" ? newGrade : checkExist.grade,
             status: dataInput.status,
-            updated_by: session.user.id_user,
+            updated_by:
+              session.user.id_user_role !== 1 ? session.user.id_user : 0,
             updated_date: new Date(),
           },
           where: {

@@ -4,12 +4,17 @@ import { prisma } from "@/lib/db/init";
 import { EssayCorrection } from "@/lib/helpers/essay_correction";
 // types
 import {
+  ExamAnswerInputType,
   ExamAnswerWhereType,
+  ExamMemberStatuUpdateType,
   ExamResultSearchParamType,
   TrainingInputType,
   TrainingInputV2Type,
 } from "@/lib/types/InputTypes";
 import { ApiResponseType, SessionType } from "@/lib/types/ResultTypes";
+// services
+import { SaveExamAnswer } from "./examAnswer";
+import { UpdateExamMemberStatus } from "./examMember";
 
 /**
  * Get Exam Result
@@ -122,6 +127,68 @@ export async function GetExamResultFromExcel(
       code: 200,
       message: "exam result",
       data: dtTraining,
+    };
+  } catch (error: any) {
+    return { status: false, code: 500, message: error.message };
+  }
+}
+
+/**
+ * Recalculate Exam Result
+ * -------------------------
+ */
+export async function RecalculateExamResult(
+  session: SessionType
+): Promise<ApiResponseType> {
+  try {
+    const listExamMember = await prisma.examMember.findMany({});
+    const listExamAnswer = await prisma.examAnswer.findMany({});
+
+    // -- Update All Exam Member Status --
+    for (let iteration = 0; iteration < listExamMember.length; iteration++) {
+      const member = listExamMember[iteration];
+
+      const data: ExamMemberStatuUpdateType = {
+        id_exam_member: member.id_exam_member,
+        status: "ON_GOING",
+      };
+
+      const res = await UpdateExamMemberStatus(data, session);
+      console.log(res);
+    }
+
+    // -- Update All Exam Answer --
+    for (let iteration = 0; iteration < listExamAnswer.length; iteration++) {
+      const answer = listExamAnswer[iteration];
+
+      const data: ExamAnswerInputType = {
+        id_exam_answer: Number(answer.id_exam_answer),
+        id_exam_question: answer.id_exam_question,
+        id_user: answer.id_user,
+        answer: answer.answer,
+      };
+
+      const res = await SaveExamAnswer(data, session);
+      console.log(res);
+    }
+
+    // -- Update All Exam Member Status --
+    for (let iteration = 0; iteration < listExamMember.length; iteration++) {
+      const member = listExamMember[iteration];
+
+      const data: ExamMemberStatuUpdateType = {
+        id_exam_member: member.id_exam_member,
+        status: "COMPLETED",
+      };
+
+      const res = await UpdateExamMemberStatus(data, session);
+      console.log(res);
+    }
+
+    return {
+      status: true,
+      code: 200,
+      message: "recalculate success",
     };
   } catch (error: any) {
     return { status: false, code: 500, message: error.message };

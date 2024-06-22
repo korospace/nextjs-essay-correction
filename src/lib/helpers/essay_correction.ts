@@ -16,6 +16,8 @@ import {
 import { TrainingInputType, TrainingInputV2Type } from "../types/InputTypes";
 // helpers
 import { cleanText, getSynonymsByWord } from "./helpers";
+// data
+import synonymData from "../data/synonym.json";
 
 export const EssayCorrection = {
   cleanText: (text: string) => {
@@ -101,12 +103,36 @@ export const EssayCorrection = {
       return synonym.includes(word2);
     }
   },
-  lev: async (typo: string, bener: string): Promise<number> => {
-    if (await EssayCorrection.areSynonyms(typo, bener)) {
-      return 0;
-    }
+  normalizeAnswer: (answerKey: string, studentAnswer: string) => {
+    const synonymMap = new Map();
 
-    // Menghitung Levenshtein Distance dan tingkat kemiripan kedua string
+    // Populate synonym map with word as key and list of synonyms as value
+    synonymData.forEach((entry) => {
+      const synonyms = entry.synonym.split(",").map((s) => s.trim());
+      synonymMap.set(entry.word, synonyms);
+      synonyms.forEach((syn) => {
+        if (!synonymMap.has(syn)) {
+          synonymMap.set(syn, [
+            entry.word,
+            ...synonyms.filter((s) => s !== syn),
+          ]);
+        }
+      });
+    });
+
+    const keyWords = new Set(answerKey.split(" "));
+    const normalizedWords = studentAnswer.split(" ").map((word) => {
+      for (const [key, synonyms] of synonymMap.entries()) {
+        if (synonyms.includes(word) && keyWords.has(key)) {
+          return key;
+        }
+      }
+      return word;
+    });
+
+    return normalizedWords.join(" ");
+  },
+  lev: async (typo: string, bener: string): Promise<number> => {
     const typo1 = "#" + typo;
     const bener1 = "#" + bener;
     const matriks = Array.from({ length: typo1.length }, () =>
@@ -133,27 +159,15 @@ export const EssayCorrection = {
     return distance / Math.max(typo1.length - 1, bener1.length - 1);
   },
   simMatrix: async (arr1: string[], arr2: string[]): Promise<number[][]> => {
-    console.log(arr1);
-    console.log(arr2);
-
-    // Mengembalikan array matriks kemiripan dari kedua input string
     const similar: number[][] = Array.from({ length: arr1.length }, () =>
       Array.from({ length: arr2.length }, () => 0)
     );
-    console.log(similar);
 
     for (let i = 0; i < arr1.length; i++) {
       for (let j = 0; j < arr2.length; j++) {
-        console.log(i, j);
-
-        console.log(arr1[i]);
-        console.log(arr2[j]);
-
         similar[i][j] = await EssayCorrection.lev(arr1[i], arr2[j]);
-        console.log(similar[i][j]);
       }
     }
-    console.log(similar);
 
     return similar;
   },
@@ -207,7 +221,7 @@ export const EssayCorrection = {
 
     // looping question & answer
     for (let iteration = 0; iteration < data.length; iteration++) {
-      const nGramValue = 5;
+      const nGramValue = 2;
       const row = data[iteration];
 
       // -- pre process
@@ -217,11 +231,11 @@ export const EssayCorrection = {
       let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
       // let ak_ngram = EC.nGram(ak_stemmed.arr ?? [], nGramValue);
       let a_cleaned = EC.cleanText(row.answer);
-      let a_stemmed = EC.stemmingSastrawi(a_cleaned);
+      let a_normalize = EC.normalizeAnswer(ak_cleaned, a_cleaned);
+      let a_stemmed = EC.stemmingSastrawi(a_normalize);
       let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
       let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
       // let a_ngram = EC.nGram(a_stemmed.arr ?? [], nGramValue);
-      // -- Menghitung skor urutan kalimat
 
       // -- similarity matrix
       const similarityMatrix = await EC.simMatrix(
@@ -246,11 +260,6 @@ export const EssayCorrection = {
       const resultLev = EC.resultLev(maxSimilarity);
       const resultLevPercentage = EC.resultLevPercentage(maxSimilarity);
       const resultLevGrade = EC.grading(resultLevPercentage);
-      console.log(ak_ngram.arr);
-      console.log(a_ngram.arr);
-      console.log(similarityMatrix);
-      console.log(maxSimilarity);
-      console.log(resultLev);
 
       // -- expectation counter
       if (row.expectation_grade) {
