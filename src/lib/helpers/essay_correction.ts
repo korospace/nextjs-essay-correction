@@ -9,6 +9,7 @@ import fs from "fs";
 import path from "path";
 // types
 import {
+  LevType,
   PreProcessingType,
   TrainingDetailType,
   TrainingType,
@@ -132,7 +133,7 @@ export const EssayCorrection = {
 
     return normalizedWords.join(" ");
   },
-  lev: async (typo: string, bener: string): Promise<number> => {
+  lev: async (typo: string, bener: string): Promise<LevType> => {
     const typo1 = "#" + typo;
     const bener1 = "#" + bener;
     const matriks = Array.from({ length: typo1.length }, () =>
@@ -147,6 +148,7 @@ export const EssayCorrection = {
           let a = matriks[i - 1][j] + 1;
           let b = matriks[i][j - 1] + 1;
           let c = matriks[i - 1][j - 1];
+
           if (typo1[i] !== bener1[j]) {
             c += 1;
           }
@@ -156,7 +158,16 @@ export const EssayCorrection = {
     }
 
     const distance = matriks[typo1.length - 1][bener1.length - 1];
-    return distance / Math.max(typo1.length - 1, bener1.length - 1);
+    const distanceLength = Math.max(typo1.length - 1, bener1.length - 1);
+
+    return {
+      distance: distance,
+      distanceLength: distanceLength,
+      levValue: distance / distanceLength,
+      string1: typo1,
+      string2: bener1,
+      matriks,
+    };
   },
   simMatrix: async (arr1: string[], arr2: string[]): Promise<number[][]> => {
     const similar: number[][] = Array.from({ length: arr1.length }, () =>
@@ -165,7 +176,8 @@ export const EssayCorrection = {
 
     for (let i = 0; i < arr1.length; i++) {
       for (let j = 0; j < arr2.length; j++) {
-        similar[i][j] = await EssayCorrection.lev(arr1[i], arr2[j]);
+        const lev = await EssayCorrection.lev(arr1[i], arr2[j]);
+        similar[i][j] = lev.levValue;
       }
     }
 

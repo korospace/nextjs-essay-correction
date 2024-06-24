@@ -17,6 +17,11 @@ export const TrainingInputValidation = z.object({
   expectation_grade: z.string(),
 });
 
+export const LevInputValidation = z.object({
+  string1: z.string(),
+  string2: z.string(),
+});
+
 /**
  * User
  * ------------------------------------------

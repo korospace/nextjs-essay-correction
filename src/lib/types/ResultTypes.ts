@@ -50,6 +50,15 @@ export type CourseType = {
  * Essay Correction
  * --------------------------
  */
+export type LevType = {
+  distance: number;
+  distanceLength: number;
+  levValue: number;
+  matriks: number[][];
+  string1: string;
+  string2: string;
+};
+
 export type TrainingType = {
   wrong?: number;
   correct?: number;

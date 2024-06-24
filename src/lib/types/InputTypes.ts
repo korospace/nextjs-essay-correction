@@ -34,6 +34,11 @@ export type TrainingInputV2Type = {
   answer_key: PreProcessingType;
 };
 
+export type LevInputType = {
+  string1: string;
+  string2: string;
+};
+
 /**
  * Login
  * --------------------------

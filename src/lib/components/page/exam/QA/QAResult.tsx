@@ -12,10 +12,10 @@ import {
   TrainingType,
 } from "@/lib/types/ResultTypes";
 // component
-// services
-import { HttpGetExamResult } from "@/lib/services/functions/frontend/examResultFunc";
 import QAResultInfo from "./QAResultInfo";
 import QAResultDetail from "./QAResultDetail";
+// services
+import { HttpGetExamResult } from "@/lib/services/functions/frontend/examResultFunc";
 
 /**
  * Props

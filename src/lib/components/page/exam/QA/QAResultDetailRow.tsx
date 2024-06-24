@@ -6,6 +6,7 @@ import { Divider } from "@nextui-org/react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 // types
 import { TrainingDetailType } from "@/lib/types/ResultTypes";
+import { LevInputType } from "@/lib/types/InputTypes";
 // components
 import StrToBadges from "../../StrToBadges";
 
@@ -16,9 +17,16 @@ import StrToBadges from "../../StrToBadges";
 type Props = {
   no: number;
   dtTrainingDetail: TrainingDetailType;
+  outerDivWidth: number;
+  onChooseLev: (data: LevInputType) => void;
 };
 
-export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
+export default function QAResultDetailRow({
+  no,
+  dtTrainingDetail,
+  outerDivWidth,
+  onChooseLev,
+}: Props) {
   // -- Use Ref --
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -35,7 +43,8 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
   };
 
   const sumMaxSimiliarity = (values: number[]): number => {
-    return values.reduce((acc, val) => acc + val, 0);
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    return parseFloat(sum.toFixed(2));
   };
 
   const sumSimiliarity = (values: number[]): number => {
@@ -43,6 +52,18 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
     const totalRows = values.length;
     const sum = 100 - (totalMaxRowValue / totalRows) * 100;
     return parseFloat(sum.toFixed(2));
+  };
+
+  const handleChooseLev = (rowIndex: number, colIndex: number) => {
+    const answer = dtTrainingDetail.answer.n_gram?.split(" | ");
+    const answer_key = dtTrainingDetail.answer_key.n_gram?.split(" | ");
+
+    if (answer && answer_key) {
+      onChooseLev({
+        string1: answer[colIndex],
+        string2: answer_key[rowIndex],
+      });
+    }
   };
 
   return (
@@ -260,7 +281,10 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
             </h1>
             {dtTrainingDetail.answer.n_gram &&
               dtTrainingDetail.answer_key.n_gram && (
-                <div className="max-w-5xl overflow-x-auto">
+                <div
+                  className={`overflow-x-auto`}
+                  style={{ width: outerDivWidth - 45 + "px" }}
+                >
                   <table
                     border={1}
                     cellPadding="5"
@@ -300,7 +324,10 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                                 ) ? (
                                   <td
                                     key={`${rowIndex} | ${colIndex}`}
-                                    className={`bg-yellow-200 text-center border-b border-budiluhur-700/50`}
+                                    className={`bg-yellow-200 text-center border-b border-budiluhur-700/50 cursor-pointer`}
+                                    onClick={() =>
+                                      handleChooseLev(rowIndex, colIndex)
+                                    }
                                   >
                                     {simValue.toFixed(2)}
                                   </td>
@@ -311,7 +338,10 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                                       (colIndex + 1) % 2 == 1
                                         ? "bg-budiluhur-100"
                                         : "bg-budiluhur-200"
-                                    } text-center border-b border-budiluhur-700/50`}
+                                    } text-center border-b border-budiluhur-700/50 cursor-pointer`}
+                                    onClick={() =>
+                                      handleChooseLev(rowIndex, colIndex)
+                                    }
                                   >
                                     {simValue.toFixed(2)}
                                   </td>
@@ -340,7 +370,9 @@ export default function QAResultDetailRow({ no, dtTrainingDetail }: Props) {
                     (value: any, rowIndex: any) => (
                       <tr key={rowIndex}>
                         <td className="bg-budiluhur-200">row {rowIndex + 1}</td>
-                        <td className="bg-budiluhur-100">{value}</td>
+                        <td className="bg-budiluhur-100">
+                          {parseFloat(value).toFixed(2)}
+                        </td>
                       </tr>
                     )
                   )}
