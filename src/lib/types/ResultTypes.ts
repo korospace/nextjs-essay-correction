@@ -88,6 +88,7 @@ export type PreProcessingType = {
   stemmed?: string;
   stopword_removed?: string;
   n_gram?: string;
+  synonym_replaced?: string;
 };
 
 /**

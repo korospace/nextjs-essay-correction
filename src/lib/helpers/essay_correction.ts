@@ -104,7 +104,10 @@ export const EssayCorrection = {
       return synonym.includes(word2);
     }
   },
-  normalizeAnswer: (answerKey: string, studentAnswer: string) => {
+  synonymReplacement: (
+    answerKey: string,
+    studentAnswer: string
+  ): PreProcessingType => {
     const synonymMap = new Map();
 
     // Populate synonym map with word as key and list of synonyms as value
@@ -131,7 +134,10 @@ export const EssayCorrection = {
       return word;
     });
 
-    return normalizedWords.join(" ");
+    return {
+      str: normalizedWords.join(" "),
+      arr: normalizedWords,
+    };
   },
   lev: async (typo: string, bener: string): Promise<LevType> => {
     const typo1 = "#" + typo;
@@ -233,7 +239,7 @@ export const EssayCorrection = {
 
     // looping question & answer
     for (let iteration = 0; iteration < data.length; iteration++) {
-      const nGramValue = 2;
+      const nGramValue = 5;
       const row = data[iteration];
 
       // -- pre process
@@ -241,13 +247,14 @@ export const EssayCorrection = {
       let ak_stemmed = EC.stemmingSastrawi(ak_cleaned);
       let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
       let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
-      // let ak_ngram = EC.nGram(ak_stemmed.arr ?? [], nGramValue);
       let a_cleaned = EC.cleanText(row.answer);
-      let a_normalize = EC.normalizeAnswer(ak_cleaned, a_cleaned);
-      let a_stemmed = EC.stemmingSastrawi(a_normalize);
+      let a_stemmed = EC.stemmingSastrawi(a_cleaned);
       let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
-      let a_ngram = EC.nGram(a_stopword.arr ?? [], nGramValue);
-      // let a_ngram = EC.nGram(a_stemmed.arr ?? [], nGramValue);
+      let a_normalize = EC.synonymReplacement(
+        ak_stopword.str ?? "",
+        a_stopword.str ?? ""
+      );
+      let a_ngram = EC.nGram(a_normalize.arr ?? [], nGramValue);
 
       // -- similarity matrix
       const similarityMatrix = await EC.simMatrix(
@@ -301,7 +308,7 @@ export const EssayCorrection = {
           cleaned: a_cleaned.split(" ").join(" | "),
           stemmed: a_stemmed.arr?.join(" | "),
           stopword_removed: a_stopword.arr?.join(" | "),
-          // stopword_removed: "",
+          synonym_replaced: a_normalize.arr?.join(" | "),
           n_gram: a_ngram.arr?.join(" | "),
         },
         answer_key: {
@@ -309,7 +316,6 @@ export const EssayCorrection = {
           cleaned: ak_cleaned.split(" ").join(" | "),
           stemmed: ak_stemmed.arr?.join(" | "),
           stopword_removed: ak_stopword.arr?.join(" | "),
-          // stopword_removed: "",
           n_gram: ak_ngram.arr?.join(" | "),
         },
       };
@@ -347,6 +353,7 @@ export const EssayCorrection = {
       let a_cleaned = row.answer.cleaned;
       let a_stemmed = row.answer.stemmed;
       let a_stopword = row.answer.stopword_removed;
+      let a_normalize = row.answer.synonym_replaced;
       let a_ngram = row.answer.n_gram;
 
       let resultLevPercentage = 0;
@@ -377,6 +384,7 @@ export const EssayCorrection = {
           cleaned: a_cleaned,
           stemmed: a_stemmed,
           stopword_removed: a_stopword,
+          synonym_replaced: a_normalize,
           n_gram: a_ngram,
         },
         answer_key: {

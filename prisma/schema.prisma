@@ -135,11 +135,13 @@ model ExamAnswer {
   answer_cleaning      String        @db.Text
   answer_stemming      String        @db.Text
   answer_stopword      String        @db.Text
+  answer_sp            String?       @db.Text
   answer_ngram         String        @db.Text
   answer_key           String        @db.MediumText
   answer_key_cleaning  String        @db.Text
   answer_key_stemming  String        @db.Text
   answer_key_stopword  String        @db.Text
+  answer_key_sp        String?       @db.Text
   answer_key_ngram     String        @db.Text
   similiariy_matrix    String        @db.MediumText
   max_simmatrix        String        @db.Text

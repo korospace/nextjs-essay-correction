@@ -84,6 +84,7 @@ export async function GetExamResult(
             cleaned: answer?.answer_cleaning,
             stemmed: answer?.answer_stemming,
             stopword_removed: answer?.answer_stopword,
+            synonym_replaced: answer?.answer_sp ?? "",
             n_gram: answer?.answer_ngram,
           },
           answer_key: {
@@ -143,6 +144,7 @@ export async function RecalculateExamResult(
   try {
     const listExamMember = await prisma.examMember.findMany({});
     const listExamAnswer = await prisma.examAnswer.findMany({});
+    console.log(listExamMember);
 
     // -- Update All Exam Member Status --
     for (let iteration = 0; iteration < listExamMember.length; iteration++) {
@@ -154,7 +156,7 @@ export async function RecalculateExamResult(
       };
 
       const res = await UpdateExamMemberStatus(data, session);
-      console.log(res);
+      // console.log(res);
     }
 
     // -- Update All Exam Answer --
@@ -169,7 +171,7 @@ export async function RecalculateExamResult(
       };
 
       const res = await SaveExamAnswer(data, session);
-      console.log(res);
+      // console.log(res);
     }
 
     // -- Update All Exam Member Status --
@@ -182,7 +184,7 @@ export async function RecalculateExamResult(
       };
 
       const res = await UpdateExamMemberStatus(data, session);
-      console.log(res);
+      // console.log(res);
     }
 
     return {

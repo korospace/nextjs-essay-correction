@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   // const ak_cleaned = EssayCorrection.cleanText(answer_key);
   // const a_cleaned = EssayCorrection.cleanText(answer);
-  // const a_normalize = EssayCorrection.normalizeAnswer(ak_cleaned, a_cleaned);
+  // const a_normalize = EssayCorrection.synonymReplacement(ak_cleaned, a_cleaned);
 
   // const ak_stemmed = EssayCorrection.stemmingSastrawi(ak_cleaned);
   // const a_stemmed = EssayCorrection.stemmingSastrawi(a_normalize);

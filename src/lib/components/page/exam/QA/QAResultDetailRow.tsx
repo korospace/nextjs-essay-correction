@@ -140,7 +140,7 @@ export default function QAResultDetailRow({
             </div>
             <table className="text-sm">
               <tr>
-                <td className="align-top min-w-[138px]">
+                <td className="align-top min-w-[170px]">
                   <b>Raw</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
@@ -211,7 +211,7 @@ export default function QAResultDetailRow({
             </div>
             <table className="text-sm">
               <tr>
-                <td className="align-top min-w-[138px]">
+                <td className="align-top min-w-[170px]">
                   <b>Raw</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>
@@ -254,6 +254,20 @@ export default function QAResultDetailRow({
                   <div className="max-w-full">
                     <StrToBadges
                       str={dtTrainingDetail.answer.stopword_removed ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className="align-top">
+                  <b>Synonym Replacement</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer.synonym_replaced ?? ""}
                       delimiter=" | "
                     />
                   </div>
