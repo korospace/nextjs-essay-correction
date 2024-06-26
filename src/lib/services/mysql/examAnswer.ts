@@ -159,6 +159,7 @@ export async function SaveExamAnswer(
           answer_key_stemming: dtTrainingDetail.answer_key.stemmed || "",
           answer_key_stopword:
             dtTrainingDetail.answer_key.stopword_removed || "",
+          answer_key_sp: dtTrainingDetail.answer_key.synonym_replaced,
           answer_key_ngram: dtTrainingDetail.answer_key.n_gram || "",
           similiariy_matrix: dtTrainingDetail.similiarity_matrix,
           max_simmatrix: dtTrainingDetail.max_simmatrix,
@@ -179,6 +180,7 @@ export async function SaveExamAnswer(
           answer_key_cleaning: dtTrainingDetail.answer_key.cleaned,
           answer_key_stemming: dtTrainingDetail.answer_key.stemmed,
           answer_key_stopword: dtTrainingDetail.answer_key.stopword_removed,
+          answer_key_sp: dtTrainingDetail.answer_key.synonym_replaced,
           answer_key_ngram: dtTrainingDetail.answer_key.n_gram,
           similiariy_matrix: dtTrainingDetail.similiarity_matrix,
           max_simmatrix: dtTrainingDetail.max_simmatrix,

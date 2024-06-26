@@ -190,6 +190,20 @@ export default function QAResultDetailRow({
               </tr>
               <tr>
                 <td className="align-top">
+                  <b>Synonym Replacement</b>
+                </td>
+                <td className="align-top pl-1 pr-3">:</td>
+                <td>
+                  <div className="max-w-full">
+                    <StrToBadges
+                      str={dtTrainingDetail.answer_key.synonym_replaced ?? ""}
+                      delimiter=" | "
+                    />
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td className="align-top">
                   <b>NGram</b>
                 </td>
                 <td className="align-top pl-1 pr-3">:</td>

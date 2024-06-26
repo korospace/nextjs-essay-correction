@@ -120,6 +120,15 @@ export const EssayCorrection = {
             entry.word,
             ...synonyms.filter((s) => s !== syn),
           ]);
+        } else {
+          synonymMap.get(syn).push(entry.word);
+          synonymMap
+            .get(syn)
+            .push(
+              ...synonyms.filter(
+                (s) => s !== syn && !synonymMap.get(syn).includes(s)
+              )
+            );
         }
       });
     });
@@ -246,12 +255,17 @@ export const EssayCorrection = {
       let ak_cleaned = EC.cleanText(row.answer_key);
       let ak_stemmed = EC.stemmingSastrawi(ak_cleaned);
       let ak_stopword = EC.stopwordRemoval(ak_stemmed.str ?? "");
-      let ak_ngram = EC.nGram(ak_stopword.arr ?? [], nGramValue);
+      let ak_normalize = EC.synonymReplacement(
+        ak_stopword.str ?? "",
+        ak_stopword.str ?? ""
+      );
+      let ak_ngram = EC.nGram(ak_normalize.arr ?? [], nGramValue);
+      // -- -- -- --
       let a_cleaned = EC.cleanText(row.answer);
       let a_stemmed = EC.stemmingSastrawi(a_cleaned);
       let a_stopword = EC.stopwordRemoval(a_stemmed.str ?? "");
       let a_normalize = EC.synonymReplacement(
-        ak_stopword.str ?? "",
+        ak_normalize.str ?? "",
         a_stopword.str ?? ""
       );
       let a_ngram = EC.nGram(a_normalize.arr ?? [], nGramValue);
@@ -316,6 +330,7 @@ export const EssayCorrection = {
           cleaned: ak_cleaned.split(" ").join(" | "),
           stemmed: ak_stemmed.arr?.join(" | "),
           stopword_removed: ak_stopword.arr?.join(" | "),
+          synonym_replaced: ak_normalize.arr?.join(" | "),
           n_gram: ak_ngram.arr?.join(" | "),
         },
       };
@@ -349,7 +364,9 @@ export const EssayCorrection = {
       let ak_cleaned = row.answer_key.cleaned;
       let ak_stemmed = row.answer_key.stemmed;
       let ak_stopword = row.answer_key.stopword_removed;
+      let ak_normalize = row.answer_key.stopword_removed;
       let ak_ngram = row.answer_key.n_gram;
+      // -- -- -- --
       let a_cleaned = row.answer.cleaned;
       let a_stemmed = row.answer.stemmed;
       let a_stopword = row.answer.stopword_removed;
@@ -392,6 +409,7 @@ export const EssayCorrection = {
           cleaned: ak_cleaned,
           stemmed: ak_stemmed,
           stopword_removed: ak_stopword,
+          synonym_replaced: ak_normalize,
           n_gram: ak_ngram,
         },
       };
